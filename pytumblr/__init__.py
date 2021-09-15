@@ -63,7 +63,7 @@ class TumblrRestClient(object):
 
         :returns: A dict created from the JSON response
         """
-        return self.send_api_request("get", "/v2/user/likes", kwargs, ["limit", "offset", "before", "after"])
+        return self.send_api_request("get", "/v2/user/likes", kwargs)
 
     def following(self, **kwargs):
         """
@@ -76,7 +76,7 @@ class TumblrRestClient(object):
 
         :returns: A dict created from the JSON response
         """
-        return self.send_api_request("get", "/v2/user/following", kwargs, ["limit", "offset"])
+        return self.send_api_request("get", "/v2/user/following", kwargs)
 
     def dashboard(self, **kwargs):
         """
@@ -91,7 +91,7 @@ class TumblrRestClient(object):
 
         :returns: A dict created from the JSON response
         """
-        return self.send_api_request("get", "/v2/user/dashboard", kwargs, ["limit", "offset", "type", "since_id", "reblog_info", "notes_info"])
+        return self.send_api_request("get", "/v2/user/dashboard", kwargs)
 
     def tagged(self, tag, **kwargs):
         """
@@ -108,7 +108,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         kwargs.update({'tag': tag})
-        return self.send_api_request("get", '/v2/tagged', kwargs, ['before', 'limit', 'filter', 'tag', 'api_key'], True)
+        return self.send_api_request("get", '/v2/tagged', kwargs, True)
 
     @validate_blogname
     def posts(self, blogname, type=None, **kwargs):
@@ -131,7 +131,7 @@ class TumblrRestClient(object):
             url = '/v2/blog/{}/posts'.format(blogname)
         else:
             url = '/v2/blog/{}/posts/{}'.format(blogname, type)
-        return self.send_api_request("get", url, kwargs, ['id', 'tag', 'limit', 'offset', 'before', 'reblog_info', 'notes_info', 'filter', 'api_key', 'npf'], True)
+        return self.send_api_request("get", url, kwargs, True)
 
     @validate_blogname
     def blog_info(self, blogname):
@@ -144,7 +144,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response of information
         """
         url = "/v2/blog/{}/info".format(blogname)
-        return self.send_api_request("get", url, {}, ['api_key'], True)
+        return self.send_api_request("get", url, {}, True)
 
     @validate_blogname
     def blog_following(self, blogname, **kwargs):
@@ -163,7 +163,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/blog/{}/following".format(blogname)
-        return self.send_api_request("get", url, kwargs, ['limit', 'offset'])
+        return self.send_api_request("get", url, kwargs)
 
     @validate_blogname
     def followers(self, blogname, **kwargs):
@@ -178,7 +178,7 @@ class TumblrRestClient(object):
         :returns: A dict created from the JSON response
         """
         url = "/v2/blog/{}/followers".format(blogname)
-        return self.send_api_request("get", url, kwargs, ['limit', 'offset'])
+        return self.send_api_request("get", url, kwargs)
 
     @validate_blogname
     def blog_likes(self, blogname, **kwargs):
@@ -195,7 +195,7 @@ class TumblrRestClient(object):
         :returns: A dict created from the JSON response
         """
         url = "/v2/blog/{}/likes".format(blogname)
-        return self.send_api_request("get", url, kwargs, ['limit', 'offset', 'before', 'after'], True)
+        return self.send_api_request("get", url, kwargs, True)
 
     @validate_blogname
     def queue(self, blogname, **kwargs):
@@ -209,7 +209,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/blog/{}/posts/queue".format(blogname)
-        return self.send_api_request("get", url, kwargs, ['limit', 'offset', 'filter', 'npf'])
+        return self.send_api_request("get", url, kwargs)
 
     @validate_blogname
     def drafts(self, blogname, **kwargs):
@@ -220,7 +220,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/blog/{}/posts/draft".format(blogname)
-        return self.send_api_request("get", url, kwargs, ['filter', 'npf'])
+        return self.send_api_request("get", url, kwargs)
 
     @validate_blogname
     def submission(self, blogname, **kwargs):
@@ -233,7 +233,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/blog/{}/posts/submission".format(blogname)
-        return self.send_api_request("get", url, kwargs, ['offset', 'filter', 'npf'])
+        return self.send_api_request("get", url, kwargs)
 
     @validate_blogname
     def follow(self, blogname):
@@ -245,7 +245,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/user/follow"
-        return self.send_api_request("post", url, {'url': blogname}, ['url'])
+        return self.send_api_request("post", url, {'url': blogname})
 
     @validate_blogname
     def unfollow(self, blogname):
@@ -257,7 +257,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/user/unfollow"
-        return self.send_api_request("post", url, {'url': blogname}, ['url'])
+        return self.send_api_request("post", url, {'url': blogname})
 
     def like(self, id, reblog_key):
         """
@@ -283,7 +283,7 @@ class TumblrRestClient(object):
         """
         url = "/v2/user/unlike"
         params = {'id': id, 'reblog_key': reblog_key}
-        return self.send_api_request("post", url, params, ['id', 'reblog_key'])
+        return self.send_api_request("post", url, params)
 
     @validate_blogname
     def create_photo(self, blogname, **kwargs):
@@ -444,11 +444,10 @@ class TumblrRestClient(object):
         """
         url = "/v2/blog/{}/post/reblog".format(blogname)
 
-        valid_options = ['id', 'reblog_key', 'comment'] + self._post_valid_options(kwargs.get('type', None))
         if 'tags' in kwargs and kwargs['tags']:
             # Take a list of tags and make them acceptable for upload
             kwargs['tags'] = ",".join(kwargs['tags'])
-        return self.send_api_request('post', url, kwargs, valid_options)
+        return self.send_api_request('post', url, kwargs)
 
     @validate_blogname
     def delete_post(self, blogname, id):
@@ -461,7 +460,7 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/blog/{}/post/delete".format(blogname)
-        return self.send_api_request('post', url, {'id': id}, ['id'])
+        return self.send_api_request('post', url, {'id': id})
 
     @validate_blogname
     def edit_post(self, blogname, **kwargs):
@@ -485,8 +484,7 @@ class TumblrRestClient(object):
             # Take a list of tags and make them acceptable for upload
             kwargs['tags'] = ",".join(kwargs['tags'])
 
-        valid_options = ['id'] + self._post_valid_options(kwargs.get('type', None))
-        return self.send_api_request('post', url, kwargs, valid_options)
+        return self.send_api_request('post', url, kwargs)
 
     @validate_blogname
     def notes(self, blogname, id, **kwargs):
@@ -501,32 +499,8 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/blog/{}/notes".format(blogname)
-        valid_options = ["id", "mode", "before_timestamp"]
         kwargs.update({"id":id})
-        return self.send_api_request('get', url, kwargs, valid_options)
-
-    # Parameters valid for /post, /post/edit, and /post/reblog.
-    def _post_valid_options(self, post_type=None):
-        # These options are always valid
-        valid = ['type', 'state', 'tags', 'tweet', 'date', 'format', 'slug']
-
-        # Other options are valid on a per-post-type basis
-        if post_type == 'text':
-            valid += ['title', 'body']
-        elif post_type == 'photo':
-            valid += ['caption', 'link', 'source', 'data', 'photoset_layout']
-        elif post_type == 'quote':
-            valid += ['quote', 'source']
-        elif post_type == 'link':
-            valid += ['title', 'url', 'description', 'thumbnail']
-        elif post_type == 'chat':
-            valid += ['title', 'conversation']
-        elif post_type == 'audio':
-            valid += ['caption', 'external_url', 'data']
-        elif post_type == 'video':
-            valid += ['caption', 'embed', 'data']
-
-        return valid
+        return self.send_api_request('get', url, kwargs)
 
     def _send_post(self, blogname, params):
         """
@@ -535,34 +509,30 @@ class TumblrRestClient(object):
 
         :param blogname: a string, the blogname of the blog you are posting to
         :param params: a dict, the key-value of the parameters for the api request
-        :param valid_options: a list of valid options that the request allows
 
         :returns: a dict parsed from the JSON response
         """
         url = "/v2/blog/{}/post".format(blogname)
-        valid_options = self._post_valid_options(params.get('type', None))
 
         if len(params.get("tags", [])) > 0:
             # Take a list of tags and make them acceptable for upload
             params['tags'] = ",".join(params['tags'])
 
-        return self.send_api_request("post", url, params, valid_options)
+        return self.send_api_request("post", url, params)
 
-    def send_api_request(self, method, url, params={}, valid_parameters=[], needs_api_key=False):
+    def send_api_request(self, method, url, params={}, needs_api_key=False):
         """
         Sends the url with parameters to the requested url, validating them
         to make sure that they are what we expect to have passed to us
 
         :param method: a string, the request method you want to make
         :param params: a dict, the parameters used for the API request
-        :param valid_parameters: a list, the list of valid parameters
         :param needs_api_key: a boolean, whether or not your request needs an api key injected
 
         :returns: a dict parsed from the JSON response
         """
         if needs_api_key:
             params.update({'api_key': self.request.consumer_key})
-            valid_parameters.append('api_key')
 
         files = {}
         if 'data' in params:
@@ -573,7 +543,6 @@ class TumblrRestClient(object):
                 files = {'data': open(params['data'], 'rb')}
             del params['data']
 
-        validate_params(valid_parameters, params)
         if method == "get":
             return self.request.get(url, params)
         elif method == "delete":
