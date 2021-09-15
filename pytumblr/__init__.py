@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from builtins import str
 from builtins import object
+from .helpers import validate_blogname
 from .request import TumblrRequest
 
 
