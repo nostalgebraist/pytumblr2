@@ -32,6 +32,8 @@ class TumblrRequest(object):
             "User-Agent": "pytumblr/" + self.__version,
         }
 
+        self.last_response_headers = None
+
     def get(self, url, params):
         """
         Issues a GET request against the API, properly formatting the params
@@ -105,6 +107,8 @@ class TumblrRequest(object):
 
         :returns: a dict of the json response
         """
+        self.last_response_headers = response.headers
+
         try:
             data = response.json()
         except ValueError:

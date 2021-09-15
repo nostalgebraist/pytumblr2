@@ -17,6 +17,7 @@ class TumblrRestClient(object):
         oauth_token="",
         oauth_secret="",
         host="https://api.tumblr.com",
+        consume_in_npf_by_default=True,
     ):
         """
         Initializes the TumblrRestClient object, creating the TumblrRequest
@@ -35,9 +36,15 @@ class TumblrRestClient(object):
 
         :returns: None
         """
+        self.consume_in_npf_by_default = consume_in_npf_by_default
         self.request = TumblrRequest(
             consumer_key, consumer_secret, oauth_token, oauth_secret, host
         )
+        # TODO: is this actually useful?
+        # self.api_key_blogname = self._retrieve_api_key_blogname()
+
+    def _retrieve_api_key_blogname(self):
+        return self.info().get("user", {}).get("name")
 
     def info(self):
         """
@@ -558,3 +565,34 @@ class TumblrRestClient(object):
             return self.request.delete(url, params)
         else:
             return self.request.post(url, params, files)
+
+    def get_ratelimit_data(self):
+        if self.request.last_headers is None:
+            print("warning: no ratelimit data found, sending a request to get it")
+            self.dashboard()
+
+        headers = self.request.last_headers
+        results = {}
+
+        results["day"] = {
+            "remaining": int(headers["X-Ratelimit-Perday-Remaining"]),
+            "reset": int(headers["X-Ratelimit-Perday-Reset"]),
+        }
+
+        results["hour"] = {
+            "remaining": int(headers["X-Ratelimit-Perhour-Remaining"]),
+            "reset": int(headers["X-Ratelimit-Perhour-Reset"]),
+        }
+
+        for k in ["day", "hour"]:
+            results[k]["max_rate"] = results[k]["remaining"] / results[k]["reset"]
+
+        results["effective_max_rate"] = min(
+            [results[k]["max_rate"] for k in ["day", "hour"]]
+        )
+        results["effective_remaining"] = min(
+            [results[k]["remaining"] for k in ["day", "hour"]]
+        )
+        results["effective_reset"] = min([results[k]["reset"] for k in ["day", "hour"]])
+
+        return results
