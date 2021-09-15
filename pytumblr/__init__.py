@@ -43,6 +43,16 @@ class TumblrRestClient(object):
         # TODO: is this actually useful?
         # self.api_key_blogname = self._retrieve_api_key_blogname()
 
+    def npf_consumption_on(self):
+        self.consume_in_npf_by_default = True
+
+    def npf_consumption_off(self):
+        self.consume_in_npf_by_default = False
+
+    @staticmethod
+    def is_consumption_endpoint(url: str) -> bool:
+        return "/posts" in url or "/dashboard" in url
+
     def _retrieve_api_key_blogname(self):
         return self.info().get("user", {}).get("name")
 
@@ -547,6 +557,10 @@ class TumblrRestClient(object):
 
         :returns: a dict parsed from the JSON response
         """
+        if TumblrRestClient.is_consumption_endpoint(url):
+            if "npf" not in params:
+                params["npf"] = self.consume_in_npf_by_default
+
         if needs_api_key:
             params.update({"api_key": self.request.consumer_key})
 
