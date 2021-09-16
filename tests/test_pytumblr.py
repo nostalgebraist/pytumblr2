@@ -54,7 +54,7 @@ class TumblrRestClientTest(unittest.TestCase):
     def test_posts_with_type(self, mock_get):
         mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {"posts": [] } }')
 
-        response = self.client.posts('seejohnrun', 'photo')
+        response = self.client.legacy_posts_by_type('seejohnrun', 'photo')
         assert response['posts'] == []
 
     @mock.patch('requests.get')
@@ -62,7 +62,7 @@ class TumblrRestClientTest(unittest.TestCase):
         mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {"posts": [] } }')
 
         args = {'limit': 1}
-        response = self.client.posts('seejohnrun', 'photo', **args)
+        response = self.client.legacy_posts_by_type('seejohnrun', 'photo', **args)
         assert response['posts'] == []
 
     @mock.patch('requests.get')
