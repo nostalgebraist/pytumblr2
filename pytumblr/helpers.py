@@ -1,7 +1,7 @@
 from functools import wraps
 from copy import deepcopy
 
-from format_conversion.npf2html import TumblrThread
+from .format_conversion.npf2html import TumblrThread
 
 
 def validate_blogname(fn):
