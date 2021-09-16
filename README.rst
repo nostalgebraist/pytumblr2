@@ -2,7 +2,7 @@ PyTumblr2
 ========
 |Build Status|
 
-A fork of [pytumblr](https://github.com/tumblr/pytumblr), `pytumblr <https://github.com/tumblr/pytumblr>`_, updated for the New Post Format era.
+A fork of `pytumblr <https://github.com/tumblr/pytumblr>`_, updated for the New Post Format era.
 
 Quick demo, if you're familiar with pytumblr:
 
