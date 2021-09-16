@@ -11,20 +11,25 @@ Quick demo, if you're familiar with pytumblr:
     client = pytumblr2.TumblrRestClient(*keys)
 
     posts = client.posts('nostalgebraist')['posts']
-    posts[0]['blocks']  # by default, post content is fetched in NPF
+    # by default, post content is fetched in NPF
+    posts[0]['blocks']
 
     # fetch single posts easily
     post = client.get_single_post('nostalgebraist', 642337957436588032)
 
     client.legacy_conversion_on()
     post = client.get_single_post('nostalgebraist', 642337957436588032)
-    post['body']  # post content was fetched in NPF, then converted to legacy HTML and populated to 'body'
+    # post content was fetched in NPF, then converted to legacy HTML and populated to 'body'
+    post['body']
 
-    client.get_ratelimit_data()  # returns ratelimit info, from the headers of the most recent API response
+    # returns ratelimit info, from the headers of the most recent API response
+    client.get_ratelimit_data()
 
-    client.npf_consumption_off()  # if you're nostalgic for 2015
+    # if you're nostalgic for 2015
+    client.npf_consumption_off()
     post = client.get_single_post('nostalgebraist', 642337957436588032)
-    post['body']  # post content was fetched in legacy
+    # post content was fetched in legacy
+    post['body']
 
 TODO: update the rest of the README for PyTumblr2.
 
