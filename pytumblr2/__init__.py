@@ -623,11 +623,11 @@ class TumblrRestClient(object):
             return response
 
     def get_ratelimit_data(self):
-        if self.request.last_headers is None:
+        if self.request.last_response_headers is None:
             print("warning: no ratelimit data found, sending a request to get it")
             self.dashboard()
 
-        headers = self.request.last_headers
+        headers = self.request.last_response_headers
         results = {}
 
         results["day"] = {
