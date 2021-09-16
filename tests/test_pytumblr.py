@@ -4,7 +4,7 @@ standard_library.install_aliases()
 import unittest
 import mock
 import json
-import pytumblr
+import pytumblr2
 from urllib.parse import parse_qs
 
 
@@ -34,7 +34,7 @@ class TumblrRestClientTest(unittest.TestCase):
     def setUp(self):
         with open('tests/tumblr_credentials.json', 'r') as f:
             credentials = json.loads(f.read())
-        self.client = pytumblr.TumblrRestClient(credentials['consumer_key'], credentials['consumer_secret'], credentials['oauth_token'], credentials['oauth_token_secret'])
+        self.client = pytumblr2.TumblrRestClient(credentials['consumer_key'], credentials['consumer_secret'], credentials['oauth_token'], credentials['oauth_token_secret'])
 
     @mock.patch('requests.get')
     def test_dashboard(self, mock_get):

@@ -4,7 +4,7 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import input
 
-import pytumblr
+import pytumblr2
 import yaml
 import os
 import code
@@ -76,13 +76,13 @@ if __name__ == '__main__':
         tokens = yaml.safe_load(yaml_file)
         yaml_file.close()
 
-    client = pytumblr.TumblrRestClient(
+    client = pytumblr2.TumblrRestClient(
         tokens['consumer_key'],
         tokens['consumer_secret'],
         tokens['oauth_token'],
         tokens['oauth_token_secret']
     )
 
-    print('pytumblr client created. You may run pytumblr commands prefixed with "client".\n')
+    print('pytumblr2 client created. You may run pytumblr2 commands prefixed with "client".\n')
 
     code.interact(local=dict(globals(), **{'client': client}))

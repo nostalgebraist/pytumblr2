@@ -1,6 +1,17 @@
-PyTumblr
+PyTumblr2
 ========
 |Build Status|
+
+A fork of [pytumblr](https://github.com/tumblr/pytumblr), `pytumblr <https://github.com/tumblr/pytumblr>`_, updated for the New Post Format era.
+
+Quick demo, if you're familiar with pytumblr:
+
+.. code:: python
+
+    client = pytumblr2.TumblrRestClient(*keys)
+    # TODO: write the rest...
+
+TODO: update the rest of the README for PyTumblr2.
 
 Installation
 ============
@@ -25,11 +36,11 @@ Usage
 Create a client
 ---------------
 
-A ``pytumblr.TumblrRestClient`` is the object you'll make all of your calls to the Tumblr API through. Creating one is this easy:
+A ``pytumblr2.TumblrRestClient`` is the object you'll make all of your calls to the Tumblr API through. Creating one is this easy:
 
 .. code:: python
 
-    client = pytumblr.TumblrRestClient(
+    client = pytumblr2.TumblrRestClient(
         '<consumer_key>',
         '<consumer_secret>',
         '<oauth_token>',
@@ -274,11 +285,16 @@ The tests (and coverage reports) are run with nose, like this:
 Copyright and license
 =====================
 
+Copyright 2021 nostalgebraist
+
 Copyright 2013 Tumblr, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
 
 http://www.apache.org/licenses/LICENSE-2.0
+
+The Initial Developer of some parts of the framework, which are copied from, derived from, or
+inspired by Pytumblr (via Apache Flex), is Tumblr, Inc. (https://www.tumblr.com/).
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations.
 

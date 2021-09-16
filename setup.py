@@ -90,18 +90,17 @@ class UploadCommand(Command):
 
 
 setup(
-    name="PyTumblr",
-    version="0.1.0",
-    description="A Python API v2 wrapper for Tumblr",
+    name="PyTumblr2",
+    version="0.0.1",
+    description="A Python API v2 wrapper for Tumblr, updated for NPF compliance (and beyond!)",
     long_description=long_description,
-    author="Tumblr",
-    author_email="accounts@tumblr.com",
-    url="https://github.com/tumblr/pytumblr",
-    download_url="https://github.com/tumblr/pytumblr/archive/0.1.0.tar.gz",
-    packages=['pytumblr'],
+    author="nostalgebraist",
+    author_email="nostalgebraist@gmail.com",
+    url="https://github.com/nostalgebraist/pytumblr",
+    packages=['pytumblr2'],
     license="Apache Software License 2.0",
     zip_safe=False,
-    keywords='pytumblr',
+    keywords=['pytumblr', 'pytumblr2', 'tumblr'],
     python_requires=">=3.4",
     classifiers=[
         'Development Status :: 4 - Beta',
