@@ -325,7 +325,7 @@ class TumblrRestClientTest(unittest.TestCase):
         mock_delete.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
 
         api_url = '/v2/some/api'
-        response = self.client.send_api_request('delete', api_url, {'param1': 'foo', 'param2': 'bar'}, ['param1', 'param2'], False)
+        response = self.client.send_api_request('delete', api_url, {'param1': 'foo', 'param2': 'bar'}, False)
         assert response == []
 
 
