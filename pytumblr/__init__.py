@@ -615,7 +615,12 @@ class TumblrRestClient(object):
 
         Returns the first (and only) entry of the 'posts' field in the API response.
         """
-        return self.posts(blogname, id=id)['posts'][0]
+        response = self.posts(blogname, id=id)
+        try:
+            return response['posts'][0]
+        except KeyError:
+            # this happens if the call failed, e.g. if the blog name doesn't exist
+            return response
 
     def get_ratelimit_data(self):
         if self.request.last_headers is None:

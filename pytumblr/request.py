@@ -104,7 +104,12 @@ class TumblrRequest(object):
         try:
             data = response.json()
         except ValueError:
-            data = {'meta': { 'status': 500, 'msg': 'Server Error'}, 'response': {"error": "Malformed JSON or HTML was returned."}}
+            data = {
+                'meta': {'status': response.status_code, 'msg': response.reason},
+                'response': {
+                    "error": "API response could not be JSON parsed. 'meta' field has been generated on the client side."
+                }
+            }
 
         # We only really care about the response if we succeed
         # and the error if we fail
