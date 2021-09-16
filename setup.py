@@ -102,7 +102,7 @@ setup(
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords='pytumblr',
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+    python_requires=">=3.4",
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

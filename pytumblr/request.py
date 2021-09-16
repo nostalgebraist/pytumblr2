@@ -1,11 +1,5 @@
-from future import standard_library
-standard_library.install_aliases()
-from builtins import object
 import urllib.parse
 import requests
-import sys
-
-PY3 = sys.version_info[0] == 3
 
 from requests_oauthlib import OAuth1
 from requests.exceptions import TooManyRedirects, HTTPError
@@ -71,8 +65,6 @@ class TumblrRequest(object):
                 return self.post_multipart(url, params, files)
             else:
                 data = urllib.parse.urlencode(params)
-                if not PY3:
-                    data = str(data)
                 resp = requests.post(url, data=data, headers=self.headers, auth=self.oauth)
                 return self.json_parse(resp)
         except HTTPError as e:

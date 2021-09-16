@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from builtins import str
-from builtins import object
-
 from .helpers import validate_blogname, simulate_legacy_payload
 from .request import TumblrRequest
 
@@ -612,6 +608,14 @@ class TumblrRestClient(object):
             response["posts"] = [simulate_legacy_payload(p) for p in response["posts"]]
 
         return response
+
+    def get_single_post(self, blogname: str, id: int):
+        """
+        Wrapper around self.posts() to help retrieve single posts from the /posts endpoint.
+
+        Returns the first (and only) entry of the 'posts' field in the API response.
+        """
+        return self.posts(blogname, id=id)['posts'][0]
 
     def get_ratelimit_data(self):
         if self.request.last_headers is None:
