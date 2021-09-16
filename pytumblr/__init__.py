@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from builtins import str
 from builtins import object
+
 from .helpers import validate_blogname, simulate_legacy_payload
 from .request import TumblrRequest
 
@@ -145,7 +146,29 @@ class TumblrRestClient(object):
         return self.send_api_request("get", "/v2/tagged", kwargs, True)
 
     @validate_blogname
-    def posts(self, blogname, type=None, **kwargs):
+    def legacy_posts_by_type(self, blogname, type, **kwargs):
+        """
+        Gets a list of posts from a particular blog, filtered to a specific post type (legacy only)
+
+        :param blogname: a string, the blogname you want to look up posts
+                         for. eg: codingjester.tumblr.com
+        :param type: a string, the type of post to include
+        :param id: an int, the id of the post you are looking for on the blog
+        :param tag: a string, the tag you are looking for on posts
+        :param limit: an int, the number of results you want
+        :param offset: an int, the offset of the posts you want to start at.
+        :param before: an int, the timestamp for posts you want before.
+        :param filter: the post format you want returned: HTML, text or raw.
+        :param type: the type of posts you want returned, e.g. video. If omitted returns all post types.
+
+        :returns: a dict created from the JSON response
+        """
+
+        url = "/v2/blog/{}/posts/{}".format(blogname, type)
+        return self.send_api_request("get", url, kwargs, True)
+
+    @validate_blogname
+    def posts(self, blogname, **kwargs):
         """
         Gets a list of posts from a particular blog
 
@@ -161,10 +184,7 @@ class TumblrRestClient(object):
 
         :returns: a dict created from the JSON response
         """
-        if type is None:
-            url = "/v2/blog/{}/posts".format(blogname)
-        else:
-            url = "/v2/blog/{}/posts/{}".format(blogname, type)
+        url = "/v2/blog/{}/posts".format(blogname)
         return self.send_api_request("get", url, kwargs, True)
 
     @validate_blogname
