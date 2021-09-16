@@ -617,7 +617,7 @@ class TumblrRestClient(object):
         """
         response = self.posts(blogname, id=id)
         try:
-            return response['posts'][0]
+            return response["posts"][0]
         except KeyError:
             # this happens if the call failed, e.g. if the blog name doesn't exist
             return response

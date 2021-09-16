@@ -15,12 +15,14 @@ def validate_blogname(fn):
 
     and query all the same blog.
     """
+
     @wraps(fn)
     def add_dot_tumblr(*args, **kwargs):
-        if (len(args) > 1 and ("." not in args[1])):
+        if len(args) > 1 and ("." not in args[1]):
             args = list(args)
             args[1] += ".tumblr.com"
         return fn(*args, **kwargs)
+
     return add_dot_tumblr
 
 
@@ -43,15 +45,14 @@ def simulate_legacy_payload(post_payload):
             orig_type = post_payload["original_type"]
 
             # normalize types
-            preferred_type_names = {
-                "note": "answer",
-                "regular": "text"
-            }
+            preferred_type_names = {"note": "answer", "regular": "text"}
             orig_type = preferred_type_names.get(orig_type, orig_type)
 
             sim_payload["type"] = orig_type
         else:
-            print(f"no original_type key in payload, have type {post_payload.get('type')}, keys {sorted(post_payload.keys())}")
+            print(
+                f"no original_type key in payload, have type {post_payload.get('type')}, keys {sorted(post_payload.keys())}"
+            )
 
         thread = TumblrThread.from_payload(post_payload)
         op_content = thread.posts[0].content
@@ -90,5 +91,7 @@ def simulate_legacy_payload(post_payload):
 
     # validate
     if is_npf(sim_payload) != payload_is_npf:
-        raise ValueError(f"simulated payload switched the value of is_npf: payload {repr(post_payload)} sim_payload {repr(sim_payload)}")
+        raise ValueError(
+            f"simulated payload switched the value of is_npf: payload {repr(post_payload)} sim_payload {repr(sim_payload)}"
+        )
     return sim_payload

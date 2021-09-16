@@ -12,13 +12,20 @@ class TumblrRequest(object):
 
     __version = "0.0.8"
 
-    def __init__(self, consumer_key, consumer_secret="", oauth_token="", oauth_secret="", host="https://api.tumblr.com"):
+    def __init__(
+        self,
+        consumer_key,
+        consumer_secret="",
+        oauth_token="",
+        oauth_secret="",
+        host="https://api.tumblr.com",
+    ):
         self.host = host
         self.oauth = OAuth1(
             consumer_key,
             client_secret=consumer_secret,
             resource_owner_key=oauth_token,
-            resource_owner_secret=oauth_secret
+            resource_owner_secret=oauth_secret,
         )
         self.consumer_key = consumer_key
 
@@ -42,7 +49,9 @@ class TumblrRequest(object):
             url = url + "?" + urllib.parse.urlencode(params)
 
         try:
-            resp = requests.get(url, allow_redirects=False, headers=self.headers, auth=self.oauth)
+            resp = requests.get(
+                url, allow_redirects=False, headers=self.headers, auth=self.oauth
+            )
         except TooManyRedirects as e:
             resp = e.response
 
@@ -65,7 +74,9 @@ class TumblrRequest(object):
                 return self.post_multipart(url, params, files)
             else:
                 data = urllib.parse.urlencode(params)
-                resp = requests.post(url, data=data, headers=self.headers, auth=self.oauth)
+                resp = requests.post(
+                    url, data=data, headers=self.headers, auth=self.oauth
+                )
                 return self.json_parse(resp)
         except HTTPError as e:
             return self.json_parse(e.response)
@@ -84,7 +95,9 @@ class TumblrRequest(object):
             url = url + "?" + urllib.parse.urlencode(params)
 
         try:
-            resp = requests.delete(url, allow_redirects=False, headers=self.headers, auth=self.oauth)
+            resp = requests.delete(
+                url, allow_redirects=False, headers=self.headers, auth=self.oauth
+            )
         except TooManyRedirects as e:
             resp = e.response
 
@@ -105,16 +118,16 @@ class TumblrRequest(object):
             data = response.json()
         except ValueError:
             data = {
-                'meta': {'status': response.status_code, 'msg': response.reason},
-                'response': {
+                "meta": {"status": response.status_code, "msg": response.reason},
+                "response": {
                     "error": "API response could not be JSON parsed. 'meta' field has been generated on the client side."
-                }
+                },
             }
 
         # We only really care about the response if we succeed
         # and the error if we fail
-        if 200 <= data['meta']['status'] <= 399:
-            return data['response']
+        if 200 <= data["meta"]["status"] <= 399:
+            return data["response"]
         else:
             return data
 
@@ -135,6 +148,6 @@ class TumblrRequest(object):
             files=files,
             headers=self.headers,
             allow_redirects=False,
-            auth=self.oauth
+            auth=self.oauth,
         )
         return self.json_parse(resp)

@@ -6,9 +6,9 @@ from copy import deepcopy
 
 def _get_blogname_from_payload(post_payload):
     """retrieves payload --> broken_blog_name, or payload --> blog --> name"""
-    if 'broken_blog_name' in post_payload:
-        return post_payload['broken_blog_name']
-    return post_payload['blog']['name']
+    if "broken_blog_name" in post_payload:
+        return post_payload["broken_blog_name"]
+    return post_payload["blog"]["name"]
 
 
 class TumblrContentBlockBase:
@@ -64,7 +64,7 @@ class NPFFormattingRange:
             result["start_insert"] = f'<a href="{self.url}">'
             result["end_insert"] = f"</a>"
         elif self.type == "mention":
-            blog_url = self.blog.get('url')
+            blog_url = self.blog.get("url")
             result["start_insert"] = f'<a class="tumblelog" href="{blog_url}">'
             result["end_insert"] = f"</a>"
         elif self.type == "color":
@@ -96,13 +96,13 @@ class NPFSubtype:
 
 
 class NPFBlock(TumblrContentBlockBase):
-    def from_payload(payload: dict) -> 'NPFBlock':
-        if payload.get('type') == 'text':
+    def from_payload(payload: dict) -> "NPFBlock":
+        if payload.get("type") == "text":
             return NPFTextBlock.from_payload(payload)
-        elif payload.get('type') == 'image':
+        elif payload.get("type") == "image":
             return NPFImageBlock.from_payload(payload)
         else:
-            raise ValueError(payload.get('type'))
+            raise ValueError(payload.get("type"))
 
 
 class NPFTextBlock(NPFBlock):
@@ -167,7 +167,7 @@ class NPFTextBlock(NPFBlock):
 class NPFNonTextBlockMixin:
     @property
     def subtype_name(self):
-        return 'no_subtype'
+        return "no_subtype"
 
     @property
     def indent_level(self):
@@ -175,9 +175,7 @@ class NPFNonTextBlockMixin:
 
 
 class NPFImageBlock(NPFBlock, NPFNonTextBlockMixin):
-    def __init__(self,
-                 media: List[dict],
-                 alt_text: Optional[str] = None):
+    def __init__(self, media: List[dict], alt_text: Optional[str] = None):
         self._media = media
         self._alt_text = alt_text
 
@@ -192,18 +190,19 @@ class NPFImageBlock(NPFBlock, NPFNonTextBlockMixin):
     @property
     def original_dimensions(self) -> Optional[Tuple[int, int]]:
         for entry in self.media:
-            if entry.get('has_original_dimensions'):
-                return (entry['width'], entry['height'])
+            if entry.get("has_original_dimensions"):
+                return (entry["width"], entry["height"])
 
     @staticmethod
-    def from_payload(payload: dict) -> 'NPFImageBlock':
-        return NPFImageBlock(media=payload['media'],
-                             alt_text=payload.get('alt_text'))
+    def from_payload(payload: dict) -> "NPFImageBlock":
+        return NPFImageBlock(media=payload["media"], alt_text=payload.get("alt_text"))
 
     def _pick_one_size(self, target_width: int = 640) -> dict:
-        by_width_descending = sorted(self.media, key=lambda entry: entry['width'], reverse=True)
+        by_width_descending = sorted(
+            self.media, key=lambda entry: entry["width"], reverse=True
+        )
         for entry in by_width_descending:
-            if entry['width'] <= target_width:
+            if entry["width"] <= target_width:
                 return entry
         return by_width_descending[-1]
 
@@ -213,11 +212,15 @@ class NPFImageBlock(NPFBlock, NPFNonTextBlockMixin):
         original_dimensions_attrs_str = ""
         if self.original_dimensions is not None:
             orig_w, orig_h = self.original_dimensions
-            original_dimensions_attrs_str = f" data-orig-height=\"{orig_h}\" data-orig-width=\"{orig_w}\""
+            original_dimensions_attrs_str = (
+                f' data-orig-height="{orig_h}" data-orig-width="{orig_w}"'
+            )
 
-        img_tag = f"<img src=\"{selected_size['url']}\"{original_dimensions_attrs_str}/>"
+        img_tag = (
+            f"<img src=\"{selected_size['url']}\"{original_dimensions_attrs_str}/>"
+        )
 
-        figure_tag = f"<figure class=\"tmblr-full\"{original_dimensions_attrs_str}>{img_tag}</figure>"
+        figure_tag = f'<figure class="tmblr-full"{original_dimensions_attrs_str}>{img_tag}</figure>'
 
         return figure_tag
 
@@ -227,13 +230,13 @@ class NPFLayout:
     def layout_type(self):
         return self._layout_type
 
-    def from_payload(payload: dict) -> 'NPFLayout':
-        if payload.get('type') == 'rows':
+    def from_payload(payload: dict) -> "NPFLayout":
+        if payload.get("type") == "rows":
             return NPFLayoutRows.from_payload(payload)
-        elif payload.get('type') == 'ask':
+        elif payload.get("type") == "ask":
             return NPFLayoutAsk.from_payload(payload)
         else:
-            raise ValueError(payload.get('type'))
+            raise ValueError(payload.get("type"))
 
 
 class NPFLayoutMode:
@@ -246,14 +249,15 @@ class NPFLayoutMode:
 
     @staticmethod
     def from_payload(payload: dict) -> "NPFLayoutMode":
-        return NPFLayoutMode(mode_type=payload['type'])
+        return NPFLayoutMode(mode_type=payload["type"])
 
 
 class NPFRow:
-    def __init__(self,
-                 blocks: List[int],
-                 mode: Optional[NPFLayoutMode] = None,
-                 ):
+    def __init__(
+        self,
+        blocks: List[int],
+        mode: Optional[NPFLayoutMode] = None,
+    ):
         self._blocks = blocks
         self._mode = mode
 
@@ -267,14 +271,15 @@ class NPFRow:
 
     @staticmethod
     def from_payload(payload: dict) -> "NPFRow":
-        return NPFRow(blocks=payload['blocks'], mode=payload.get('mode'))
+        return NPFRow(blocks=payload["blocks"], mode=payload.get("mode"))
 
 
 class NPFLayoutRows(NPFLayout):
-    def __init__(self,
-                 rows: List[NPFRow],
-                 truncate_after: Optional[int] = None,
-                 ):
+    def __init__(
+        self,
+        rows: List[NPFRow],
+        truncate_after: Optional[int] = None,
+    ):
         self._rows = rows
         self._truncate_after = truncate_after
         self._layout_type = "rows"
@@ -289,16 +294,16 @@ class NPFLayoutRows(NPFLayout):
 
     @staticmethod
     def from_payload(payload: dict) -> "NPFLayoutRows":
-        rows = [entry['blocks'] for entry in payload['display']]
-        return NPFLayoutRows(rows=rows,
-                             truncate_after=payload.get('truncate_after'))
+        rows = [entry["blocks"] for entry in payload["display"]]
+        return NPFLayoutRows(rows=rows, truncate_after=payload.get("truncate_after"))
 
 
 class NPFLayoutAsk(NPFLayout):
-    def __init__(self,
-                 blocks: List[int],
-                 attribution: Optional[dict] = None,
-                 ):
+    def __init__(
+        self,
+        blocks: List[int],
+        attribution: Optional[dict] = None,
+    ):
         self._blocks = blocks
         self._attribution = attribution
         self._layout_type = "ask"
@@ -314,20 +319,23 @@ class NPFLayoutAsk(NPFLayout):
     @property
     def asking_name(self):
         if self.attribution is None:
-            return 'Anonymous'
-        return self.attribution['url'].partition('.tumblr.com')[0].partition('//')[2]
+            return "Anonymous"
+        return self.attribution["url"].partition(".tumblr.com")[0].partition("//")[2]
 
     @staticmethod
     def from_payload(payload: dict) -> "NPFLayoutAsk":
-        return NPFLayoutAsk(blocks=payload['blocks'],
-                            attribution=payload.get('attribution'))
+        return NPFLayoutAsk(
+            blocks=payload["blocks"], attribution=payload.get("attribution")
+        )
 
 
 class NPFBlockAnnotated(NPFBlock):
-    def __init__(self,
-                 base_block: NPFBlock,
-                 is_ask_block: bool = False,
-                 ask_layout: Optional[NPFLayoutAsk] = None):
+    def __init__(
+        self,
+        base_block: NPFBlock,
+        is_ask_block: bool = False,
+        ask_layout: Optional[NPFLayoutAsk] = None,
+    ):
         self.base_block = base_block
 
         self.prefix = ""
@@ -341,7 +349,7 @@ class NPFBlockAnnotated(NPFBlock):
         for attr, value in new.__dict__.items():
             setattr(self, attr, value)
 
-    def as_ask_block(self, ask_layout: NPFLayoutAsk) -> 'NPFBlockAnnotated':
+    def as_ask_block(self, ask_layout: NPFLayoutAsk) -> "NPFBlockAnnotated":
         new = deepcopy(self)
         new.is_ask_block = True
         new.ask_layout = ask_layout
@@ -369,13 +377,15 @@ class TumblrContentBase:
 
 
 class NPFContent(TumblrContentBase):
-    def __init__(self,
-                 blocks: List[NPFBlock],
-                 layout: List[NPFLayout],
-                 blog_name: str,
-                 id: Optional[int] = None,
-                 genesis_post_id: Optional[int] = None,
-                 post_url: Optional[str] = None):
+    def __init__(
+        self,
+        blocks: List[NPFBlock],
+        layout: List[NPFLayout],
+        blog_name: str,
+        id: Optional[int] = None,
+        genesis_post_id: Optional[int] = None,
+        post_url: Optional[str] = None,
+    ):
         self.raw_blocks = [
             block if isinstance(block, NPFBlockAnnotated) else NPFBlockAnnotated(block)
             for block in blocks
@@ -397,7 +407,7 @@ class NPFContent(TumblrContentBase):
 
     @property
     def legacy_prefix_link(self):
-        return f"<p><a class=\"tumblr_blog\" href=\"{self.post_url}\">{self.blog_name}</a>:</p>"
+        return f'<p><a class="tumblr_blog" href="{self.post_url}">{self.blog_name}</a>:</p>'
 
     def _make_blocks(self) -> List[NPFBlockAnnotated]:
         if len(self.layout) == 0:
@@ -414,27 +424,26 @@ class NPFContent(TumblrContentBase):
                         # TODO: handle multi-column rows
 
                         # note: deduplication here is needed b/c of april 2021 tumblr npf ask bug
-                        deduped_ixs = [ix for ix in row_ixs if ix not in ordered_block_ixs]
+                        deduped_ixs = [
+                            ix for ix in row_ixs if ix not in ordered_block_ixs
+                        ]
                         ordered_block_ixs.extend(deduped_ixs)
                 elif layout_entry.layout_type == "ask":
                     # note: deduplication here is needed b/c of april 2021 tumblr npf ask bug
-                    deduped_ixs = [ix for ix in layout_entry.blocks if ix not in ordered_block_ixs]
+                    deduped_ixs = [
+                        ix for ix in layout_entry.blocks if ix not in ordered_block_ixs
+                    ]
                     ordered_block_ixs.extend(deduped_ixs)
                     ask_ixs.update(layout_entry.blocks)
                     ask_ixs_to_layouts.update(
-                        {ix: layout_entry
-                         for ix in layout_entry.blocks}
+                        {ix: layout_entry for ix in layout_entry.blocks}
                     )
 
-            if all([layout_entry.layout_type == "ask"
-                    for layout_entry in self.layout]):
-                extras = [ix for ix in range(len(self.raw_blocks))
-                          if ix not in ask_ixs]
+            if all([layout_entry.layout_type == "ask" for layout_entry in self.layout]):
+                extras = [ix for ix in range(len(self.raw_blocks)) if ix not in ask_ixs]
                 ordered_block_ixs.extend(extras)
             return [
-                self.raw_blocks[ix].as_ask_block(
-                    ask_layout=ask_ixs_to_layouts[ix]
-                )
+                self.raw_blocks[ix].as_ask_block(ask_layout=ask_ixs_to_layouts[ix])
                 if ix in ask_ixs
                 else self.raw_blocks[ix]
                 for ix in ordered_block_ixs
@@ -455,9 +464,11 @@ class NPFContent(TumblrContentBase):
         return len(self.ask_blocks) > 0
 
     @staticmethod
-    def from_payload(payload: dict, raise_on_unimplemented: bool = False) -> 'NPFContent':
+    def from_payload(
+        payload: dict, raise_on_unimplemented: bool = False
+    ) -> "NPFContent":
         blocks = []
-        for bl in payload['content']:
+        for bl in payload["content"]:
             try:
                 blocks.append(NPFBlock.from_payload(bl))
             except ValueError as e:
@@ -467,7 +478,7 @@ class NPFContent(TumblrContentBase):
                 blocks.append(NPFTextBlock(""))
 
         layout = []
-        for lay in payload['layout']:
+        for lay in payload["layout"]:
             try:
                 layout.append(NPFLayout.from_payload(lay))
             except ValueError as e:
@@ -476,21 +487,28 @@ class NPFContent(TumblrContentBase):
 
         blog_name = _get_blogname_from_payload(payload)
 
-        if 'id' in payload:
-            id = payload['id']
-        elif 'post' in payload:
+        if "id" in payload:
+            id = payload["id"]
+        elif "post" in payload:
             # trail format
-            id = payload['post']['id']
+            id = payload["post"]["id"]
         else:
             # broken trail item format
             id = None
         id = int(id) if id is not None else None
 
-        genesis_post_id = payload.get('genesis_post_id')
+        genesis_post_id = payload.get("genesis_post_id")
         genesis_post_id = int(genesis_post_id) if genesis_post_id is not None else None
 
-        post_url = payload.get('post_url')
-        return NPFContent(blocks=blocks, layout=layout, blog_name=blog_name, id=id, genesis_post_id=genesis_post_id, post_url=post_url)
+        post_url = payload.get("post_url")
+        return NPFContent(
+            blocks=blocks,
+            layout=layout,
+            blog_name=blog_name,
+            id=id,
+            genesis_post_id=genesis_post_id,
+            post_url=post_url,
+        )
 
     def _reset_annotations(self):
         for bl in self.blocks:
@@ -578,18 +596,18 @@ class NPFContent(TumblrContentBase):
         self._assign_indents()
         self._assign_nonlocal_tags()
 
-        return "".join([block.to_html() for block in self.blocks[len(self.ask_blocks):]])
+        return "".join(
+            [block.to_html() for block in self.blocks[len(self.ask_blocks) :]]
+        )
 
     @property
-    def ask_content(self) -> Optional['NPFAsk']:
+    def ask_content(self) -> Optional["NPFAsk"]:
         if self.has_ask:
             return NPFAsk.from_parent_content(self)
 
 
 class NPFAsk(NPFContent):
-    def __init__(self,
-                 blocks: List[NPFBlock],
-                 ask_layout: NPFLayout):
+    def __init__(self, blocks: List[NPFBlock], ask_layout: NPFLayout):
         super().__init__(
             blocks=blocks,
             layout=[],
@@ -601,7 +619,7 @@ class NPFAsk(NPFContent):
         return self.blog_name
 
     @staticmethod
-    def from_parent_content(parent_content: NPFContent) -> Optional['NPFAsk']:
+    def from_parent_content(parent_content: NPFContent) -> Optional["NPFAsk"]:
         if parent_content.has_ask:
             return NPFAsk(
                 blocks=deepcopy(parent_content.ask_blocks),
@@ -615,7 +633,7 @@ class TumblrPostBase:
         blog_name: str,
         id: int,
         content: TumblrContentBase,
-        genesis_post_id: Optional[int] = None
+        genesis_post_id: Optional[int] = None,
     ):
         self._blog_name = blog_name
         self._content = content
@@ -680,23 +698,25 @@ class TumblrThread:
         return self._timestamp
 
     @staticmethod
-    def from_payload(payload: dict) -> 'TumblrThread':
-        post_payloads = payload.get('trail', []) + [payload]
+    def from_payload(payload: dict) -> "TumblrThread":
+        post_payloads = payload.get("trail", []) + [payload]
         posts = [
             TumblrPost(
                 blog_name=_get_blogname_from_payload(post_payload),
                 content=NPFContent.from_payload(post_payload),
-                tags=post_payload.get('tags', [])
+                tags=post_payload.get("tags", []),
             )
             for post_payload in post_payloads
         ]
 
-        timestamp = payload['timestamp']
+        timestamp = payload["timestamp"]
 
         return TumblrThread(posts, timestamp)
 
     @staticmethod
-    def _format_post_as_quoting_previous(post: TumblrPost, prev: TumblrPost, quoted: str) -> str:
+    def _format_post_as_quoting_previous(
+        post: TumblrPost, prev: TumblrPost, quoted: str
+    ) -> str:
         return f"{prev.content.legacy_prefix_link}<blockquote>{quoted}</blockquote>{post.to_html()}"
 
     def to_html(self) -> str:
