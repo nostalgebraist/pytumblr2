@@ -318,5 +318,5 @@ inspired by Pytumblr (via Apache Flex), is Tumblr, Inc. (https://www.tumblr.com/
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations.
 
-.. |Build Status| image:: https://travis-ci.org/tumblr/pytumblr.png?branch=master
+.. |Build Status| image:: https://travis-ci.org/nostalgebraist/pytumblr2.png?branch=master
    :target: https://travis-ci.org/tumblr/pytumblr
