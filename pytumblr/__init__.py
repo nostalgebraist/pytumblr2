@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from builtins import str
 from builtins import object
-from .helpers import validate_blogname
+from .helpers import validate_blogname, simulate_legacy_payload
 from .request import TumblrRequest
 
 
@@ -18,6 +18,7 @@ class TumblrRestClient(object):
         oauth_secret="",
         host="https://api.tumblr.com",
         consume_in_npf_by_default=True,
+        convert_npf_to_legacy_html=False,
     ):
         """
         Initializes the TumblrRestClient object, creating the TumblrRequest
@@ -37,17 +38,24 @@ class TumblrRestClient(object):
         :returns: None
         """
         self.consume_in_npf_by_default = consume_in_npf_by_default
+        self.convert_npf_to_legacy_html = convert_npf_to_legacy_html
         self.request = TumblrRequest(
             consumer_key, consumer_secret, oauth_token, oauth_secret, host
         )
-        # TODO: is this actually useful?
-        # self.api_key_blogname = self._retrieve_api_key_blogname()
+        # TODO: is this actually useful?  (yes, in load balancer)
+        self.api_key_blogname = self._retrieve_api_key_blogname()
 
     def npf_consumption_on(self):
         self.consume_in_npf_by_default = True
 
     def npf_consumption_off(self):
         self.consume_in_npf_by_default = False
+
+    def legacy_conversion_on(self):
+        self.convert_npf_to_legacy_html = True
+
+    def legacy_conversion_off(self):
+        self.convert_npf_to_legacy_html = False
 
     @staticmethod
     def is_consumption_endpoint(url: str) -> bool:
@@ -574,11 +582,16 @@ class TumblrRestClient(object):
             del params["data"]
 
         if method == "get":
-            return self.request.get(url, params)
+            response = self.request.get(url, params)
         elif method == "delete":
-            return self.request.delete(url, params)
+            response = self.request.delete(url, params)
         else:
-            return self.request.post(url, params, files)
+            response = self.request.post(url, params, files)
+
+        if self.convert_npf_to_legacy_html and "posts" in response:
+            response["posts"] = [simulate_legacy_payload(p) for p in response["posts"]]
+
+        return response
 
     def get_ratelimit_data(self):
         if self.request.last_headers is None:

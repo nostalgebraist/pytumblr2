@@ -67,8 +67,23 @@ def simulate_legacy_payload(post_payload):
             comment = this_reblog.to_html()
             sim_payload["reblog"] = {
                 "comment": comment,
-                # real payloads also have a field "tree_html" but who cares
+                # real legacy payloads also have a field "tree_html" field -- does anyone use this?
             }
+
+        body = thread.to_html()
+        # for some legacy post types, "body" is unused and a type-specific field name is used instead
+        # for ease of use, we'll always populate "body" but also try to populate the others for clients who expect them
+        sim_payload["body"] = body
+
+        legacy_type_to_body_key = {
+            "photo": "caption",
+            "audio": "caption",
+            "video": "caption",
+            "link": "description",
+        }
+        if sim_payload["type"] in legacy_type_to_body_key:
+            body_field = legacy_type_to_body_key[sim_payload["type"]]
+            sim_payload[body_field] = body
     else:
         # legacy branch: return as is
         sim_payload = post_payload
