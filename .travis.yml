@@ -7,7 +7,7 @@ matrix:
     - python: "3.7"
     - python: "3.8"
       dist: xenial
-    - python: "pypy"
+    - python: "pypy3"
 
 script:
   - python setup.py test
