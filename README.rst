@@ -134,12 +134,12 @@ Second, you can use PyTumblr2's own NPF-to-legacy converter.  To do this:
 
 A client in this state will return "hybrid" responses, containing fields from both NPF and legacy payloads:
 
-- The response will contain NPF fields like `content`. These come directly from the tumblr API response.
-- The response will also contain legacy fields like `body`. These were generated from the API response by PyTumblr2's converter.
+- The response will contain NPF fields like ``content``. These come directly from the tumblr API response.
+- The response will also contain legacy fields like ``body``. These were generated from the API response by PyTumblr2's converter.
 
 Differences between PyTumblr2's converter and tumblr's:
 
-- It behaves better in some cases where tumblr's converter fails, generally involving blockquotes. `Example<https://github.com/tumblr/docs/issues/36>`_
+- It behaves better in some cases where tumblr's converter fails, generally involving blockquotes. `Example <https://github.com/tumblr/docs/issues/36>`_
 - It is not fully featured, and focused on text and image content. For example, it simply ignores videos.
 
 Supported Methods
@@ -180,14 +180,14 @@ Blog Methods
 Creating posts
 ^^^^^^^^^^^^^^
 
-Create posts in NPF with `create_post`:
+Create posts in NPF with ``create_post`:
 
 .. code:: python
 
     client.create_post(blogName, content=[{'type': 'text', 'text': "my post"}])
 
 
-If you want to create a legacy post, use one of the methods with a `legacy_create_` prefix.  For example:
+If you want to create a legacy post, use one of the methods with a ``legacy_create_`` prefix.  For example:
 
 .. code:: python
 
@@ -226,7 +226,7 @@ Edit in legacy:
 Reblogging a Post
 ^^^^^^^^^^^^^^^^^
 
-Reblog in NPF, using your blog name, the target blog name, and the target psot ID:
+Reblog in NPF, using your blog name, the target blog name, and the target post ID:
 
 .. code:: python
 
