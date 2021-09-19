@@ -152,166 +152,166 @@ class TumblrRestClientTest(unittest.TestCase):
     @mock.patch('requests.post')
     def test_follow(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
-            '{"meta": {"status": 200, "msg": "OK"}, "response": []}',
+            '{"meta": {"status": 200, "msg": "OK"}, "response": {}}',
             mock_post)
 
         response = self.client.follow("codingjester.tumblr.com")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_unfollow(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
-            '{"meta": {"status": 200, "msg": "OK"}, "response": []}',
+            '{"meta": {"status": 200, "msg": "OK"}, "response": {}}',
             mock_post)
 
         response = self.client.unfollow("codingjester.tumblr.com")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_legacy_reblog(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
-            '{"meta": {"status": 200, "msg": "OK"}, "response": []}',
+            '{"meta": {"status": 200, "msg": "OK"}, "response": {}}',
             mock_post)
 
         response = self.client.legacy_reblog('seejohnrun', id='123', reblog_key="adsfsadf", state='coolguy', tags=['hello', 'world'])
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_legacy_edit_post(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
-            '{"meta": {"status": 200, "msg": "OK"}, "response": []}',
+            '{"meta": {"status": 200, "msg": "OK"}, "response": {}}',
             mock_post)
 
         response = self.client.legacy_edit_post('seejohnrun', id='123', state='coolguy', tags=['hello', 'world'])
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_like(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
-            '{"meta": {"status": 200, "msg": "OK"}, "response": []}',
+            '{"meta": {"status": 200, "msg": "OK"}, "response": {}}',
             mock_post)
 
         response = self.client.like('123', "adsfsadf")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_unlike(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
-            '{"meta": {"status": 200, "msg": "OK"}, "response": []}',
+            '{"meta": {"status": 200, "msg": "OK"}, "response": {}}',
             mock_post)
 
         response = self.client.unlike('123', "adsfsadf")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.get')
     def test_info(self, mock_get):
-        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
+        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {}}')
 
         response = self.client.info()
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.get')
     def test_likes(self, mock_get):
-        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
+        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {}}')
 
         response = self.client.likes()
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.get')
     def test_likes_with_after(self, mock_get):
-        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
+        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {}}')
 
         response = self.client.likes(after=1418684291)
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.get')
     def test_likes_with_before(self, mock_get):
-        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
+        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {}}')
 
         response = self.client.likes(before=1418684291)
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.get')
     def test_following(self, mock_get):
-        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
+        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {}}')
 
         response = self.client.following()
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.get')
     def test_tagged(self, mock_get):
-        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
+        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {}}')
 
         response = self.client.tagged('food')
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_legacy_create_text(self, mock_post):
-        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
+        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": {}}')
 
         response = self.client.legacy_create_text('codingjester.tumblr.com', body="Testing")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_legacy_create_link(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
-            '{"meta": {"status": 201, "msg": "OK"}, "response": []}',
+            '{"meta": {"status": 201, "msg": "OK"}, "response": {}}',
             mock_post)
 
         response = self.client.legacy_create_link('codingjester.tumblr.com', url="https://google.com", tags=['omg', 'nice'])
-        assert response == []
+        assert response == {}
 
 
     @mock.patch('requests.post')
     def test_no_tags(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
-            '{"meta": {"status": 201, "msg": "OK"}, "response": []}',
+            '{"meta": {"status": 201, "msg": "OK"}, "response": {}}',
             mock_post)
 
         self.client.legacy_create_link('seejohnrun.tumblr.com', tags=[])
 
     @mock.patch('requests.post')
     def test_legacy_create_quote(self, mock_post):
-        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
+        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": {}}')
 
         response = self.client.legacy_create_quote('codingjester.tumblr.com', quote="It's better to love and lost, than never have loved at all.")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_legacy_create_chat(self, mock_post):
-        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
+        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": {}}')
 
         response = self.client.legacy_create_chat('codingjester.tumblr.com', conversation="JB: Testing is rad.\nJC: Hell yeah.")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_legacy_create_photo(self, mock_post):
-        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
+        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": {}}')
 
         response = self.client.legacy_create_photo('codingjester.tumblr.com', source="https://media.tumblr.com/image.jpg")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_legacy_create_audio(self, mock_post):
-        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
+        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": {}}')
 
         response = self.client.legacy_create_audio('codingjester.tumblr.com', external_url="https://media.tumblr.com/audio.mp3")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.post')
     def test_legacy_create_video(self, mock_post):
-        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
+        mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": {}}')
 
         response = self.client.legacy_create_video('codingjester.tumblr.com', embed="blahblahembed")
-        assert response == []
+        assert response == {}
 
     @mock.patch('requests.delete')
     def test_api_delete(self, mock_delete):
-        mock_delete.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
+        mock_delete.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {}}')
 
         api_url = '/v2/some/api'
         response = self.client.send_api_request('delete', api_url, {'param1': 'foo', 'param2': 'bar'}, False)
-        assert response == []
+        assert response == {}
 
 
 if __name__ == "__main__":
