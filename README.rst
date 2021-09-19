@@ -56,7 +56,7 @@ Planned features that aren't implemented yet:
 Installation
 ============
 
-Install via pip (once it's been released):
+Install via pip:
 
 .. code-block:: bash
 
