@@ -1,5 +1,5 @@
 PyTumblr2
-========
+=========
 |Build Status|
 
 A fork of `pytumblr <https://github.com/tumblr/pytumblr>`_, updated for the New Post Format era.
