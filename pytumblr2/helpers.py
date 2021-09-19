@@ -1,7 +1,26 @@
 from functools import wraps
 from copy import deepcopy
+from typing import NamedTuple
 
 from .format_conversion.npf2html import TumblrThread
+
+
+class PostIdentifier(NamedTuple):
+    blog_name: str
+    id: int
+
+    @staticmethod
+    def from_url(url: str) -> 'PostIdentifier':
+        url_content = url.partition("//")[2]
+        url_paths = url_content.split("/")
+        blog_name = url_paths[0].partition('.tumblr.com')[0]
+
+        id_str = url_paths[2]
+        id_ = int(id_str)
+        return PostIdentifier(blog_name, id_)
+
+    def fetch(self, client):
+        return client.get_single_post(blogname=self.blog_name, id=self.id)
 
 
 def validate_blogname(fn):
