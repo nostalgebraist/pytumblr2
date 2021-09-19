@@ -180,7 +180,7 @@ Blog Methods
 Creating posts
 ^^^^^^^^^^^^^^
 
-Create posts in NPF with ``create_post`:
+Create posts in NPF with ``create_post``:
 
 .. code:: python
 
