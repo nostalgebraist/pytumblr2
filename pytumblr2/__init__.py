@@ -536,7 +536,7 @@ class TumblrRestClient(object):
         return self.send_api_request("post", url, {"id": id})
 
     @validate_blogname
-    def legacy_edit_post(self, blogname, **kwargs):
+    def legacy_edit_post(self, blogname, id, **kwargs):
         """
         Edits a post with a given id (legacy)
 
@@ -552,6 +552,8 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/blog/{}/post/edit".format(blogname)
+
+        kwargs.update({"id": id})
 
         if "tags" in kwargs and kwargs["tags"]:
             # Take a list of tags and make them acceptable for upload
