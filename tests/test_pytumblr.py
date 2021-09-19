@@ -258,19 +258,19 @@ class TumblrRestClientTest(unittest.TestCase):
         assert response == []
 
     @mock.patch('requests.post')
-    def test_create_text(self, mock_post):
+    def test_legacy_create_text(self, mock_post):
         mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
 
-        response = self.client.create_text('codingjester.tumblr.com', body="Testing")
+        response = self.client.legacy_create_text('codingjester.tumblr.com', body="Testing")
         assert response == []
 
     @mock.patch('requests.post')
-    def test_create_link(self, mock_post):
+    def test_legacy_create_link(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
             '{"meta": {"status": 201, "msg": "OK"}, "response": []}',
             mock_post)
 
-        response = self.client.create_link('codingjester.tumblr.com', url="https://google.com", tags=['omg', 'nice'])
+        response = self.client.legacy_create_link('codingjester.tumblr.com', url="https://google.com", tags=['omg', 'nice'])
         assert response == []
 
         assert parse_qs(mock_post.data) == parse_qs('url=https%3A%2F%2Fgoogle.com&type=link&tags=omg%2Cnice')
@@ -281,43 +281,43 @@ class TumblrRestClientTest(unittest.TestCase):
             '{"meta": {"status": 201, "msg": "OK"}, "response": []}',
             mock_post)
 
-        self.client.create_link('seejohnrun.tumblr.com', tags=[])
+        self.client.legacy_create_link('seejohnrun.tumblr.com', tags=[])
 
         assert parse_qs(mock_post.data) == parse_qs('type=link&tags=[]')
 
     @mock.patch('requests.post')
-    def test_create_quote(self, mock_post):
+    def test_legacy_create_quote(self, mock_post):
         mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
 
-        response = self.client.create_quote('codingjester.tumblr.com', quote="It's better to love and lost, than never have loved at all.")
+        response = self.client.legacy_create_quote('codingjester.tumblr.com', quote="It's better to love and lost, than never have loved at all.")
         assert response == []
 
     @mock.patch('requests.post')
-    def test_create_chat(self, mock_post):
+    def test_legacy_create_chat(self, mock_post):
         mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
 
-        response = self.client.create_chat('codingjester.tumblr.com', conversation="JB: Testing is rad.\nJC: Hell yeah.")
+        response = self.client.legacy_create_chat('codingjester.tumblr.com', conversation="JB: Testing is rad.\nJC: Hell yeah.")
         assert response == []
 
     @mock.patch('requests.post')
-    def test_create_photo(self, mock_post):
+    def test_legacy_create_photo(self, mock_post):
         mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
 
-        response = self.client.create_photo('codingjester.tumblr.com', source="https://media.tumblr.com/image.jpg")
+        response = self.client.legacy_create_photo('codingjester.tumblr.com', source="https://media.tumblr.com/image.jpg")
         assert response == []
 
     @mock.patch('requests.post')
-    def test_create_audio(self, mock_post):
+    def test_legacy_create_audio(self, mock_post):
         mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
 
-        response = self.client.create_audio('codingjester.tumblr.com', external_url="https://media.tumblr.com/audio.mp3")
+        response = self.client.legacy_create_audio('codingjester.tumblr.com', external_url="https://media.tumblr.com/audio.mp3")
         assert response == []
 
     @mock.patch('requests.post')
-    def test_create_video(self, mock_post):
+    def test_legacy_create_video(self, mock_post):
         mock_post.side_effect = wrap_response('{"meta": {"status": 201, "msg": "OK"}, "response": []}')
 
-        response = self.client.create_video('codingjester.tumblr.com', embed="blahblahembed")
+        response = self.client.legacy_create_video('codingjester.tumblr.com', embed="blahblahembed")
         assert response == []
 
     @mock.patch('requests.delete')
