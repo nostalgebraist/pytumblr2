@@ -42,6 +42,8 @@ class TumblrRestClient(object):
         # TODO: is this actually useful?  (yes, in load balancer)
         self.api_key_blogname = self._retrieve_api_key_blogname()
 
+        self.reblog_key_cache = {}
+
     def npf_consumption_on(self):
         self.consume_in_npf_by_default = True
 
@@ -336,9 +338,30 @@ class TumblrRestClient(object):
         return self.send_api_request("post", url, params)
 
     @validate_blogname
-    def create_photo(self, blogname, **kwargs):
+    def create_post(self, blogname, **kwargs):
         """
-        Create a photo post or photoset on a blog
+        Create a new NPF post
+
+        Doesn't support user-uploaded media (e.g. photos) yet.
+        These are supported in legacy, just not in NPF yet.
+
+        :param blogname: a string, the url of the blog you want to post to.
+        :param content: list of NPF content blocks
+        :param state: list of NPF layout entries
+        :param state: a string, The state of the post.
+        :param tags: a list of tags that you want applied to the post
+        :param date: a string, the GMT date and time of the post
+        :param slug: a string, a short text summary to the end of the post url
+        :param data: a string or a list of the path of photo(s)
+
+        :returns: a dict created from the JSON response
+        """
+        return self._send_post(blogname, kwargs)
+
+    @validate_blogname
+    def legacy_create_photo(self, blogname, **kwargs):
+        """
+        Create a new legacy photo post
 
         :param blogname: a string, the url of the blog you want to post to.
         :param state: a string, The state of the post.
@@ -355,12 +378,12 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         kwargs.update({"type": "photo"})
-        return self._send_post(blogname, kwargs)
+        return self._send_post_legacy(blogname, kwargs)
 
     @validate_blogname
-    def create_text(self, blogname, **kwargs):
+    def legacy_create_text(self, blogname, **kwargs):
         """
-        Create a text post on a blog
+        Create a new legacy text post
 
         :param blogname: a string, the url of the blog you want to post to.
         :param state: a string, The state of the post.
@@ -375,12 +398,12 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         kwargs.update({"type": "text"})
-        return self._send_post(blogname, kwargs)
+        return self._send_post_legacy(blogname, kwargs)
 
     @validate_blogname
-    def create_quote(self, blogname, **kwargs):
+    def legacy_create_quote(self, blogname, **kwargs):
         """
-        Create a quote post on a blog
+        Create a new legacy quote post
 
         :param blogname: a string, the url of the blog you want to post to.
         :param state: a string, The state of the post.
@@ -395,12 +418,12 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         kwargs.update({"type": "quote"})
-        return self._send_post(blogname, kwargs)
+        return self._send_post_legacy(blogname, kwargs)
 
     @validate_blogname
-    def create_link(self, blogname, **kwargs):
+    def legacy_create_link(self, blogname, **kwargs):
         """
-        Create a link post on a blog
+        Create a new legacy link post
 
         :param blogname: a string, the url of the blog you want to post to.
         :param state: a string, The state of the post.
@@ -416,12 +439,12 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         kwargs.update({"type": "link"})
-        return self._send_post(blogname, kwargs)
+        return self._send_post_legacy(blogname, kwargs)
 
     @validate_blogname
-    def create_chat(self, blogname, **kwargs):
+    def legacy_create_chat(self, blogname, **kwargs):
         """
-        Create a chat post on a blog
+        Create a new legacy chat post
 
         :param blogname: a string, the url of the blog you want to post to.
         :param state: a string, The state of the post.
@@ -436,12 +459,12 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         kwargs.update({"type": "chat"})
-        return self._send_post(blogname, kwargs)
+        return self._send_post_legacy(blogname, kwargs)
 
     @validate_blogname
-    def create_audio(self, blogname, **kwargs):
+    def legacy_create_audio(self, blogname, **kwargs):
         """
-        Create a audio post on a blog
+        Create a new legacy audio post
 
         :param blogname: a string, the url of the blog you want to post to.
         :param state: a string, The state of the post.
@@ -457,12 +480,12 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         kwargs.update({"type": "audio"})
-        return self._send_post(blogname, kwargs)
+        return self._send_post_legacy(blogname, kwargs)
 
     @validate_blogname
-    def create_video(self, blogname, **kwargs):
+    def legacy_create_video(self, blogname, **kwargs):
         """
-        Create a audio post on a blog
+        Create a new legacy video post
 
         :param blogname: a string, the url of the blog you want to post to.
         :param state: a string, The state of the post.
@@ -478,12 +501,12 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         kwargs.update({"type": "video"})
-        return self._send_post(blogname, kwargs)
+        return self._send_post_legacy(blogname, kwargs)
 
     @validate_blogname
-    def reblog(self, blogname, **kwargs):
+    def legacy_reblog(self, blogname, **kwargs):
         """
-        Creates a reblog on the given blogname
+        Creates a reblog on the given blogname (legacy)
 
         :param blogname: a string, the url of the blog you want to reblog to
         :param id: an int, the post id that you are reblogging
@@ -513,9 +536,9 @@ class TumblrRestClient(object):
         return self.send_api_request("post", url, {"id": id})
 
     @validate_blogname
-    def edit_post(self, blogname, **kwargs):
+    def legacy_edit_post(self, blogname, **kwargs):
         """
-        Edits a post with a given id
+        Edits a post with a given id (legacy)
 
         :param blogname: a string, the url of the blog you want to edit
         :param state: a string, the state of the post. published, draft, queue, or private.
@@ -552,7 +575,7 @@ class TumblrRestClient(object):
         kwargs.update({"id": id})
         return self.send_api_request("get", url, kwargs)
 
-    def _send_post(self, blogname, params):
+    def _send_post(self, blogname, params, npf=True):
         """
         Formats parameters and sends the API request off. Validates
         common and per-post-type parameters and formats your tags for you.
@@ -562,13 +585,19 @@ class TumblrRestClient(object):
 
         :returns: a dict parsed from the JSON response
         """
-        url = "/v2/blog/{}/post".format(blogname)
+        if npf:
+            url = "/v2/blog/{}/posts".format(blogname)
+        else:
+            url = "/v2/blog/{}/post".format(blogname)
 
         if len(params.get("tags", [])) > 0:
             # Take a list of tags and make them acceptable for upload
             params["tags"] = ",".join(params["tags"])
 
         return self.send_api_request("post", url, params)
+
+    def _send_post_legacy(self, blogname, params):
+        return self._send_post(blogname, params, npf=False)
 
     def send_api_request(self, method, url, params={}, needs_api_key=False):
         """

@@ -172,23 +172,23 @@ class TumblrRestClientTest(unittest.TestCase):
         assert parse_qs(mock_post.data) == parse_qs('url=codingjester.tumblr.com')
 
     @mock.patch('requests.post')
-    def test_reblog(self, mock_post):
+    def test_legacy_reblog(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
             '{"meta": {"status": 200, "msg": "OK"}, "response": []}',
             mock_post)
 
-        response = self.client.reblog('seejohnrun', id='123', reblog_key="adsfsadf", state='coolguy', tags=['hello', 'world'])
+        response = self.client.legacy_reblog('seejohnrun', id='123', reblog_key="adsfsadf", state='coolguy', tags=['hello', 'world'])
         assert response == []
 
         assert parse_qs(mock_post.data) == parse_qs('state=coolguy&reblog_key=adsfsadf&id=123&tags=hello%2Cworld')
 
     @mock.patch('requests.post')
-    def test_edit_post(self, mock_post):
+    def test_legacy_edit_post(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
             '{"meta": {"status": 200, "msg": "OK"}, "response": []}',
             mock_post)
 
-        response = self.client.edit_post('seejohnrun', id='123', state='coolguy', tags=['hello', 'world'])
+        response = self.client.legacy_edit_post('seejohnrun', id='123', state='coolguy', tags=['hello', 'world'])
         assert response == []
 
         assert parse_qs(mock_post.data) == parse_qs('state=coolguy&id=123&tags=hello%2Cworld')
