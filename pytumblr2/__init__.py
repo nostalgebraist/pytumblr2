@@ -1,4 +1,6 @@
-from .helpers import validate_blogname, simulate_legacy_payload
+import warnings
+
+from .helpers import PostIdentifier, validate_blogname, simulate_legacy_payload
 from .request import TumblrRequest
 
 
@@ -40,9 +42,9 @@ class TumblrRestClient(object):
             consumer_key, consumer_secret, oauth_token, oauth_secret, host
         )
         # TODO: is this actually useful?  (yes, in load balancer)
-        self.api_key_blogname = self._retrieve_api_key_blogname()
+        # self.api_key_blogname = self._retrieve_api_key_blogname()
 
-        self.reblog_key_cache = {}
+        self.reblog_requirements_cache = {}
 
     def npf_consumption_on(self):
         self.consume_in_npf_by_default = True
@@ -359,6 +361,94 @@ class TumblrRestClient(object):
         return self._send_post(blogname, kwargs)
 
     @validate_blogname
+    def edit_post(self, blogname, id, **kwargs):
+        """
+        Create a new NPF post
+
+        Doesn't support user-uploaded media (e.g. photos) yet.
+        These are supported in legacy, just not in NPF yet.
+
+        :param blogname: a string, the url of the blog you want to post to.
+        :param id: an integer, the id of the post you want to edit.
+        :param content: list of NPF content blocks
+        :param state: list of NPF layout entries
+        :param state: a string, The state of the post.
+        :param tags: a list of tags that you want applied to the post
+        :param date: a string, the GMT date and time of the post
+        :param slug: a string, a short text summary to the end of the post url
+        :param data: a string or a list of the path of photo(s)
+
+        :returns: a dict created from the JSON response
+        """
+        url = "/v2/blog/{}/posts/{}".format(blogname, id)
+        return self.send_api_request('put', url, kwargs)
+
+    @validate_blogname
+    def reblog_post(self, blogname, parent_blogname, id,
+                    parent_blog_uuid=None,
+                    reblog_key=None,
+                    **kwargs):
+        """
+        Creates a reblog on the given blogname (legacy)
+
+        :param blogname: a string, the url of the blog you want to reblog TO
+        :param parent_blogname: a string, the name of the blog you want to reblog FROM
+        :param id: an int, the post id that you are reblogging
+
+        :param parent_blog_uuid: an optional string, the UUID of the blog you want to reblog FROM
+        :param reblog_key: a optional string, the reblog key of the post that you are reblogging
+
+        Note: to reblog a post in NPF, we need the following information:
+            - the UUID (not just the name) of the blog we're reblogging from
+            - the reblog key of the post we're reblogging
+
+        These can only be obtained via a GET request on the post.
+
+        This client caches this information when it does GET requests, so even if you don't know this information,
+        it may already be in the cache.
+
+        If it's not in the cache, we'll send a GET request to fetch it before we make the POST request to make the reblog.
+
+        If reblog_key is not provided, this method may send a GET request to get the key.
+        reblog keys are cached, so this will only happen once per post per client object.
+
+        :returns: a dict created from the JSON response
+        """
+        url = "/v2/blog/{}/posts/".format(blogname)
+
+        if parent_blog_uuid and reblog_key:
+            reblog_requirements = {
+                "blog_uuid": parent_blog_uuid,
+                "reblog_key": reblog_key
+            }
+        else:
+            post_identifier = PostIdentifier(parent_blogname, id)
+            reblog_requirements = self._get_reblog_requirements(post_identifier)
+
+        kwargs.update(
+            {
+                "parent_tumblelog_uuid": reblog_requirements["blog_uuid"],
+                "parent_post_id": id,
+                "reblog_key": reblog_requirements["reblog_key"],
+
+            }
+        )
+
+        if "tags" in kwargs and kwargs["tags"]:
+            # Take a list of tags and make them acceptable for upload
+            kwargs["tags"] = ",".join(kwargs["tags"])
+        return self.send_api_request("post", url, kwargs)
+
+    def _get_reblog_requirements(self, post_identifier: PostIdentifier):
+        if post_identifier not in self.reblog_requirements_cache:
+            post_payload = self.get_single_post(*post_identifier)
+            self.reblog_requirements_cache[post_identifier] = {
+                "reblog_key": post_payload["reblog_key"],
+                "blog_uuid": post_payload["blog"]["uuid"]
+            }
+        return self.reblog_requirements_cache[post_identifier]
+
+    @validate_blogname
     def legacy_create_photo(self, blogname, **kwargs):
         """
         Create a new legacy photo post
@@ -632,6 +722,8 @@ class TumblrRestClient(object):
             response = self.request.get(url, params)
         elif method == "delete":
             response = self.request.delete(url, params)
+        elif method == "put":
+            response = self.request.put(url, params)
         else:
             response = self.request.post(url, params, files)
 
@@ -655,7 +747,7 @@ class TumblrRestClient(object):
 
     def get_ratelimit_data(self):
         if self.request.last_response_headers is None:
-            print("warning: no ratelimit data found, sending a request to get it")
+            warnings.warn("no ratelimit data found, sending a request to get it")
             self.dashboard()
 
         headers = self.request.last_response_headers
