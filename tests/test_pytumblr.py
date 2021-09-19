@@ -158,8 +158,6 @@ class TumblrRestClientTest(unittest.TestCase):
         response = self.client.follow("codingjester.tumblr.com")
         assert response == []
 
-        assert parse_qs(mock_post.data) == parse_qs('url=codingjester.tumblr.com')
-
     @mock.patch('requests.post')
     def test_unfollow(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
@@ -168,8 +166,6 @@ class TumblrRestClientTest(unittest.TestCase):
 
         response = self.client.unfollow("codingjester.tumblr.com")
         assert response == []
-
-        assert parse_qs(mock_post.data) == parse_qs('url=codingjester.tumblr.com')
 
     @mock.patch('requests.post')
     def test_legacy_reblog(self, mock_post):
@@ -180,8 +176,6 @@ class TumblrRestClientTest(unittest.TestCase):
         response = self.client.legacy_reblog('seejohnrun', id='123', reblog_key="adsfsadf", state='coolguy', tags=['hello', 'world'])
         assert response == []
 
-        assert parse_qs(mock_post.data) == parse_qs('state=coolguy&reblog_key=adsfsadf&id=123&tags=hello%2Cworld')
-
     @mock.patch('requests.post')
     def test_legacy_edit_post(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
@@ -190,8 +184,6 @@ class TumblrRestClientTest(unittest.TestCase):
 
         response = self.client.legacy_edit_post('seejohnrun', id='123', state='coolguy', tags=['hello', 'world'])
         assert response == []
-
-        assert parse_qs(mock_post.data) == parse_qs('state=coolguy&id=123&tags=hello%2Cworld')
 
     @mock.patch('requests.post')
     def test_like(self, mock_post):
@@ -202,8 +194,6 @@ class TumblrRestClientTest(unittest.TestCase):
         response = self.client.like('123', "adsfsadf")
         assert response == []
 
-        assert parse_qs(mock_post.data) == parse_qs('id=123&reblog_key=adsfsadf')
-
     @mock.patch('requests.post')
     def test_unlike(self, mock_post):
         mock_post.side_effect = wrap_response_storing_data(
@@ -212,8 +202,6 @@ class TumblrRestClientTest(unittest.TestCase):
 
         response = self.client.unlike('123', "adsfsadf")
         assert response == []
-
-        assert parse_qs(mock_post.data) == parse_qs('id=123&reblog_key=adsfsadf')
 
     @mock.patch('requests.get')
     def test_info(self, mock_get):
@@ -273,7 +261,6 @@ class TumblrRestClientTest(unittest.TestCase):
         response = self.client.legacy_create_link('codingjester.tumblr.com', url="https://google.com", tags=['omg', 'nice'])
         assert response == []
 
-        assert parse_qs(mock_post.data) == parse_qs('url=https%3A%2F%2Fgoogle.com&type=link&tags=omg%2Cnice')
 
     @mock.patch('requests.post')
     def test_no_tags(self, mock_post):
@@ -282,8 +269,6 @@ class TumblrRestClientTest(unittest.TestCase):
             mock_post)
 
         self.client.legacy_create_link('seejohnrun.tumblr.com', tags=[])
-
-        assert parse_qs(mock_post.data) == parse_qs('type=link&tags=[]')
 
     @mock.patch('requests.post')
     def test_legacy_create_quote(self, mock_post):
