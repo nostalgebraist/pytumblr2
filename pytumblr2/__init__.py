@@ -628,8 +628,6 @@ class TumblrRestClient(object):
                 files = {"data": open(params["data"], "rb")}
             del params["data"]
 
-        print((method, url, params))
-
         if method == "get":
             response = self.request.get(url, params)
         elif method == "delete":
