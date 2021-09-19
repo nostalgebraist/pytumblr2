@@ -30,7 +30,8 @@ class TumblrRequest(object):
         self.consumer_key = consumer_key
 
         self.headers = {
-            "User-Agent": "pytumblr/" + self.__version,
+            "User-Agent": "pytumblr2/" + self.__version,
+            'Content-Type': 'application/json',
         }
 
         self.last_response_headers = None
@@ -73,9 +74,44 @@ class TumblrRequest(object):
             if files:
                 return self.post_multipart(url, params, files)
             else:
-                data = urllib.parse.urlencode(params)
+                # data = urllib.parse.urlencode(params)
+                # print(data)
+                headers = self.headers
+                headers.update({'Content-Type': 'application/json'})
+                print(headers)
+                print(params)
                 resp = requests.post(
-                    url, data=data, headers=self.headers, auth=self.oauth
+                    url, json=params, headers=headers, auth=self.oauth
+                )
+                # resp = requests.post(
+                #     url, data=data, headers=self.headers, auth=self.oauth
+                # )
+                return self.json_parse(resp)
+        except HTTPError as e:
+            return self.json_parse(e.response)
+
+    def put(self, url, params={}, files=[]):
+        """
+        Issues a PUT request against the API, allows for multipart data uploads
+
+        :param url: a string, the url you are requesting
+        :param params: a dict, the key-value of all the parameters needed
+                       in the request
+        :param files: a list, the list of tuples of files
+
+        :returns: a dict parsed of the JSON response
+        """
+        url = self.host + url
+        try:
+            if files:
+                return self.post_multipart(url, params, files)
+            else:
+                headers = self.headers
+                headers.update({'Content-Type': 'application/json'})
+                print(headers)
+                print(params)
+                resp = requests.put(
+                    url, json=params, headers=headers, auth=self.oauth
                 )
                 return self.json_parse(resp)
         except HTTPError as e:

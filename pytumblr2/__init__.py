@@ -612,7 +612,7 @@ class TumblrRestClient(object):
 
         :returns: a dict parsed from the JSON response
         """
-        if TumblrRestClient.is_consumption_endpoint(url):
+        if TumblrRestClient.is_consumption_endpoint(url) and method == "get":
             if "npf" not in params:
                 params["npf"] = self.consume_in_npf_by_default
 
@@ -627,6 +627,8 @@ class TumblrRestClient(object):
             else:
                 files = {"data": open(params["data"], "rb")}
             del params["data"]
+
+        print((method, url, params))
 
         if method == "get":
             response = self.request.get(url, params)
