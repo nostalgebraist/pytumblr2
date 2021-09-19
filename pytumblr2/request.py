@@ -75,10 +75,6 @@ class TumblrRequest(object):
             if files:
                 return self.post_multipart(url, params, files)
             else:
-                # data = urllib.parse.urlencode(params)
-                # print(data)
-                headers = self.headers
-                print(params)
                 resp = requests.post(
                     url, json=params, headers=self.headers, auth=self.oauth
                 )
@@ -102,7 +98,6 @@ class TumblrRequest(object):
             if files:
                 return self.post_multipart(url, params, files)
             else:
-                print(params)
                 resp = requests.put(
                     url, json=params, headers=self.headers, auth=self.oauth
                 )
