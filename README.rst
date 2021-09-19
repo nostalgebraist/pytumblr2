@@ -96,7 +96,7 @@ Two easy ways to get your credentials to are:
 3. Get sample login code at https://api.tumblr.com/console/calls/user/info
 
 Consuming posts in NPF and legacy
------------------
+---------------------------------
 
 By default, methods that fetch posts will fetch them in NPF.
 
@@ -115,7 +115,7 @@ To control this, use
 Note that NPF consumption is `strongly recommended by the developers of tumblr <https://github.com/tumblr/docs/blob/master/api.md#response-12>`_.
 
 Using PyTumblr2's native NPF-to-HTML conversation
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you prefer parsing HTML to parsing NPF, PyTumblr2 supports two ways of fetching posts in HTML/legacy format.
 
