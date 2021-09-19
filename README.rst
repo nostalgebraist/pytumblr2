@@ -31,6 +31,22 @@ Quick demo, if you're familiar with pytumblr:
     # post content was fetched in legacy
     post['body']
 
+    # create post in NPF
+    response = client.create_post(
+        'your_blogname',
+        content=[{'type': 'text', 'text': "I'm a bot using the beta editor!"}]
+    )
+
+    # reblog the post you just made, in NPF
+    # no need for reblog keys / UUIDs
+    # the client will fetch them if needed (with caching)
+    client.reblog_post(
+        'your_blogname',  # reblogging TO
+        'your_blogname',  # rebloggin FROM
+        response["id"],
+        content=[{'type': 'text', 'text': "I'm reblogging myself"}]
+    )
+
 TODO: update the rest of the README for PyTumblr2.
 
 Installation
