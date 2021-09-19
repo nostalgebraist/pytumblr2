@@ -47,23 +47,27 @@ Quick demo, if you're familiar with pytumblr:
         content=[{'type': 'text', 'text': "I'm reblogging myself"}]
     )
 
-TODO: update the rest of the README for PyTumblr2.
+Planned features that aren't implemented yet:
+        - support media uploads in NPF post creation/editing
+        - support the notifications endpoint
+        - helpers for pagination
+        - helpers for load balancing across clients
 
 Installation
 ============
 
-Install via pip:
+Install via pip (once it's been released):
 
 .. code-block:: bash
 
-    $ pip install pytumblr
+    $ pip install pytumblr2
 
 Install from source:
 
 .. code-block:: bash
 
-    $ git clone https://github.com/tumblr/pytumblr.git
-    $ cd pytumblr
+    $ git clone https://github.com/tumblr/pytumblr2.git
+    $ cd pytumblr2
     $ python setup.py install
 
 Usage
@@ -91,6 +95,53 @@ Two easy ways to get your credentials to are:
 2. The Tumblr API console at https://api.tumblr.com/console
 3. Get sample login code at https://api.tumblr.com/console/calls/user/info
 
+Consuming posts in NPF and legacy
+-----------------
+
+By default, methods that fetch posts will fetch them in NPF.
+
+To control this, use
+
+.. code:: python
+
+    # after client construction
+    client.npf_consumption_off()  # use legacy consumption, i.e. npf=false param in the API
+    client.npf_consumption_on()  # use NPF consumption, i.e. npf=true param in the API
+
+    # during client construction
+    client = pytumblr2.TumblrRestClient(..., consume_in_npf_by_default=False)  # legacy consumption
+    client = pytumblr2.TumblrRestClient(..., consume_in_npf_by_default=TRue)  # NPF consumption
+
+Note that NPF consumption is `strongly recommended by the developers of tumblr<https://github.com/tumblr/docs/blob/master/api.md#response-12>`_.
+
+Using PyTumblr2's native NPF-to-HTML conversation
+~~~~~~~~~~~~
+
+If you prefer parsing HTML to parsing NPF, PyTumblr2 supports two ways of fetching posts in HTML/legacy format.
+
+First, you can turn NPF consumption off, as described above.  When you fetch a post that was created in NPF, this will use tumblr's internal NPF-to-legacy conversion to produce a legacy response.
+
+Second, you can use PyTumblr2's own NPF-to-legacy converter.  To do this:
+
+.. code:: python
+
+    # after client construction
+    client.npf_consumption_on()
+    client.legacy_conversion_on()
+
+    # during client construction
+    client = pytumblr2.TumblrRestClient(..., consume_in_npf_by_default=True, convert_npf_to_legacy_html=True)
+
+A client in this state will return "hybrid" responses, containing fields from both NPF and legacy payloads:
+
+- The response will contain NPF fields like `content`. These come directly from the tumblr API response.
+- The response will also contain legacy fields like `body`. These were generated from the API response by PyTumblr2's converter.
+
+Differences between PyTumblr2's converter and tumblr's:
+
+- It behaves better in some cases where tumblr's converter fails, generally involving blockquotes. `Example<https://github.com/tumblr/docs/issues/36>`_
+- It is not fully featured, and focused on text and image content. For example, it simply ignores videos.
+
 Supported Methods
 -----------------
 
@@ -117,6 +168,7 @@ Blog Methods
 
     client.blog_info(blogName) # get information about a blog
     client.posts(blogName, **params) # get posts for a blog
+    client.get_single_post(blogName, id , **params) # get a single post
     client.avatar(blogName) # get the avatar for a blog
     client.blog_likes(blogName) # get the likes on a blog
     client.followers(blogName) # get the followers of a blog
@@ -124,138 +176,71 @@ Blog Methods
     client.queue(blogName) # get the queue for a given blog
     client.submission(blogName) # get the submissions for a given blog
 
-Post Methods
-~~~~~~~~~~~~
 
 Creating posts
 ^^^^^^^^^^^^^^
 
-PyTumblr lets you create all of the various types that Tumblr supports. When using these types there are a few defaults that are able to be used with any post type.
-
-The default supported types are described below.
-
--  **state** - a string, the state of the post. Supported types are *published*, *draft*, *queue*, *private*
--  **tags** - a list, a list of strings that you want tagged on the post. eg: ["testing", "magic", "1"]
--  **tweet** - a string, the string of the customized tweet you want. eg: "Man I love my mega awesome post!"
--  **date** - a string, the customized GMT that you want
--  **format** - a string, the format that your post is in. Support types are *html* or *markdown*
--  **slug** - a string, the slug for the url of the post you want
-
-We'll show examples throughout of these default examples while showcasing all the specific post types.
-
-Creating a photo post
-'''''''''''''''''''''
-
-Creating a photo post supports a bunch of different options plus the described default options \* **caption** - a string, the user supplied caption \* **link** - a string, the "click-through" url for the photo \* **source** - a string, the url for the photo you want to use (use this or the data parameter) \* **data** - a list or string, a list of filepaths or a single file path for multipart file upload
+Create posts in NPF with `create_post`:
 
 .. code:: python
 
-    #Creates a photo post using a source URL
-    client.create_photo(blogName, state="published", tags=["testing", "ok"],
-                        source="https://68.media.tumblr.com/b965fbb2e501610a29d80ffb6fb3e1ad/tumblr_n55vdeTse11rn1906o1_500.jpg")
+    client.create_post(blogName, content=[{'type': 'text', 'text': "my post"}])
 
-    #Creates a photo post using a local filepath
-    client.create_photo(blogName, state="queue", tags=["testing", "ok"],
-                        tweet="Woah this is an incredible sweet post [URL]",
-                        data="/Users/johnb/path/to/my/image.jpg")
 
-    #Creates a photoset post using several local filepaths
-    client.create_photo(blogName, state="draft", tags=["jb is cool"], format="markdown",
-                        data=["/Users/johnb/path/to/my/image.jpg", "/Users/johnb/Pictures/kittens.jpg"],
-                        caption="## Mega sweet kittens")
-
-Creating a text post
-''''''''''''''''''''
-
-Creating a text post supports the same options as default and just a two other parameters \* **title** - a string, the optional title for the post. Supports markdown or html \* **body** - a string, the body of the of the post. Supports markdown or html
+If you want to create a legacy post, use one of the methods with a `legacy_create_` prefix.  For example:
 
 .. code:: python
 
     #Creating a text post
-    client.create_text(blogName, state="published", slug="testing-text-posts", title="Testing", body="testing1 2 3 4")
+    client.legacy_create_text(blogName, state="published", slug="testing-text-posts", title="Testing", body="testing1 2 3 4")
 
-Creating a quote post
-'''''''''''''''''''''
+    #Creates a photo post using a source URL
+    client.legacy_create_photo(blogName, state="published", tags=["testing", "ok"],
+                               source="https://68.media.tumblr.com/b965fbb2e501610a29d80ffb6fb3e1ad/tumblr_n55vdeTse11rn1906o1_500.jpg")
 
-Creating a quote post supports the same options as default and two other parameter \* **quote** - a string, the full text of the qote. Supports markdown or html \* **source** - a string, the cited source. HTML supported
+    #Creates a photo post using a local filepath
+    client.legacy_create_photo(blogName, state="queue", tags=["testing", "ok"],
+                               tweet="Woah this is an incredible sweet post [URL]",
+                               data="/Users/johnb/path/to/my/image.jpg")
 
-.. code:: python
-
-    #Creating a quote post
-    client.create_quote(blogName, state="queue", quote="I am the Walrus", source="Ringo")
-
-Creating a link post
-''''''''''''''''''''
-
--  **title** - a string, the title of post that you want. Supports HTML entities.
--  **url** - a string, the url that you want to create a link post for.
--  **description** - a string, the desciption of the link that you have
-
-.. code:: python
-
-    #Create a link post
-    client.create_link(blogName, title="I like to search things, you should too.", url="https://duckduckgo.com",
-                       description="Search is pretty cool when a duck does it.")
-
-Creating a chat post
-''''''''''''''''''''
-
-Creating a chat post supports the same options as default and two other parameters \* **title** - a string, the title of the chat post \* **conversation** - a string, the text of the conversation/chat, with diablog labels (no html)
-
-.. code:: python
-
-    #Create a chat post
-    chat = """John: Testing can be fun!
-    Renee: Testing is tedious and so are you.
-    John: Aw.
-    """
-    client.create_chat(blogName, title="Renee just doesn't understand.", conversation=chat, tags=["renee", "testing"])
-
-Creating an audio post
-''''''''''''''''''''''
-
-Creating an audio post allows for all default options and a has 3 other parameters. The only thing to keep in mind while dealing with audio posts is to make sure that you use the external\_url parameter or data. You cannot use both at the same time. \* **caption** - a string, the caption for your post \* **external\_url** - a string, the url of the site that hosts the audio file \* **data** - a string, the filepath of the audio file you want to upload to Tumblr
-
-.. code:: python
-
-    #Creating an audio file
-    client.create_audio(blogName, caption="Rock out.", data="/Users/johnb/Music/my/new/sweet/album.mp3")
-
-    #lets use soundcloud!
-    client.create_audio(blogName, caption="Mega rock out.", external_url="https://soundcloud.com/skrillex/sets/recess")
-
-Creating a video post
-'''''''''''''''''''''
-
-Creating a video post allows for all default options and has three other options. Like the other post types, it has some restrictions. You cannot use the embed and data parameters at the same time. \* **caption** - a string, the caption for your post \* **embed** - a string, the HTML embed code for the video \* **data** - a string, the path of the file you want to upload
-
-.. code:: python
-
-    #Creating an upload from YouTube
-    client.create_video(blogName, caption="Jon Snow. Mega ridiculous sword.",
-                        embed="http://www.youtube.com/watch?v=40pUYLacrj4")
-
-    #Creating a video post from local file
-    client.create_video(blogName, caption="testing", data="/Users/johnb/testing/ok/blah.mov")
+    #Creates a photoset post using several local filepaths
+    client.legacy_create_photo(blogName, state="draft", tags=["jb is cool"], format="markdown",
+                               data=["/Users/johnb/path/to/my/image.jpg", "/Users/johnb/Pictures/kittens.jpg"],
+                               caption="## Mega sweet kittens")
 
 Editing a post
 ^^^^^^^^^^^^^^
 
-Updating a post requires you knowing what type a post you're updating. You'll be able to supply to the post any of the options given above for updates.
+Edit in NPF:
 
 .. code:: python
 
-    client.edit_post(blogName, id=post_id, type="text", title="Updated")
+    client.edit_post(blogName, post_id, content=[{'type': 'text', 'text': "edited"}])
+
+Edit in legacy:
+
+.. code:: python
+
     client.edit_post(blogName, id=post_id, type="photo", data="/Users/johnb/mega/awesome.jpg")
 
 Reblogging a Post
 ^^^^^^^^^^^^^^^^^
 
-Reblogging a post just requires knowing the post id and the reblog key, which is supplied in the JSON of any post object.
+Reblog in NPF, using your blog name, the target blog name, and the target psot ID:
 
 .. code:: python
 
-    client.reblog(blogName, id=125356, reblog_key="reblog_key")
+    client.reblog_post(blogName, 'blog_to_reblog_from', 125356)
+
+Reblogging a post requires a reblog key and (in NPF) a blog UUID.  These can only be obtained via a GET request on the post.
+
+Under the hood, the client will send this GET request if it doesn't have the key and UUID.  These values are cached, so this will only happen once per client object and post.
+
+Reblog in legacy:
+
+.. code:: python
+
+    client.legacy_reblog(blogName, id=125356, reblog_key="reblog_key")
 
 Deleting a post
 ^^^^^^^^^^^^^^^
