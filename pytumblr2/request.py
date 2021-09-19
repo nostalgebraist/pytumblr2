@@ -1,4 +1,6 @@
 import urllib.parse
+import json
+
 import requests
 
 from requests_oauthlib import OAuth1
@@ -10,7 +12,7 @@ class TumblrRequest(object):
     A simple request object that lets us query the Tumblr API
     """
 
-    __version = "0.0.8"
+    __version = "0.0.1"
 
     def __init__(
         self,
@@ -31,7 +33,6 @@ class TumblrRequest(object):
 
         self.headers = {
             "User-Agent": "pytumblr2/" + self.__version,
-            'Content-Type': 'application/json',
         }
 
         self.last_response_headers = None
@@ -77,15 +78,10 @@ class TumblrRequest(object):
                 # data = urllib.parse.urlencode(params)
                 # print(data)
                 headers = self.headers
-                headers.update({'Content-Type': 'application/json'})
-                print(headers)
                 print(params)
                 resp = requests.post(
-                    url, json=params, headers=headers, auth=self.oauth
+                    url, json=params, headers=self.headers, auth=self.oauth
                 )
-                # resp = requests.post(
-                #     url, data=data, headers=self.headers, auth=self.oauth
-                # )
                 return self.json_parse(resp)
         except HTTPError as e:
             return self.json_parse(e.response)
@@ -106,12 +102,9 @@ class TumblrRequest(object):
             if files:
                 return self.post_multipart(url, params, files)
             else:
-                headers = self.headers
-                headers.update({'Content-Type': 'application/json'})
-                print(headers)
                 print(params)
                 resp = requests.put(
-                    url, json=params, headers=headers, auth=self.oauth
+                    url, json=params, headers=self.headers, auth=self.oauth
                 )
                 return self.json_parse(resp)
         except HTTPError as e:
