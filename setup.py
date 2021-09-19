@@ -5,7 +5,7 @@ import os
 import io
 import sys
 from shutil import rmtree
-from setuptools import setup, Command
+from setuptools import setup, Command, find_packages
 
 readme_file = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                            'README.rst')
@@ -97,7 +97,7 @@ setup(
     author="nostalgebraist",
     author_email="nostalgebraist@gmail.com",
     url="https://github.com/nostalgebraist/pytumblr",
-    packages=['pytumblr2'],
+    packages=find_packages('.'),
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords=['pytumblr', 'pytumblr2', 'tumblr'],
