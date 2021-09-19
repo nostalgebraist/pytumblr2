@@ -441,11 +441,7 @@ class TumblrRestClient(object):
 
     def _get_reblog_requirements(self, post_identifier: PostIdentifier):
         if post_identifier not in self.reblog_requirements_cache:
-            post_payload = self.get_single_post(*post_identifier)
-            self.reblog_requirements_cache[post_identifier] = {
-                "reblog_key": post_payload["reblog_key"],
-                "blog_uuid": post_payload["blog"]["uuid"]
-            }
+            self.get_single_post(*post_identifier)  # populates cache
         return self.reblog_requirements_cache[post_identifier]
 
     @validate_blogname
@@ -729,6 +725,13 @@ class TumblrRestClient(object):
 
         if self.convert_npf_to_legacy_html and "posts" in response:
             response["posts"] = [simulate_legacy_payload(p) for p in response["posts"]]
+
+        for post_payload in response.get("posts", []):
+            post_identifier = PostIdentifier(post_payload["blog"]["name"], post_payload["id"])
+            self.reblog_requirements_cache[post_identifier] = {
+                "reblog_key": post_payload["reblog_key"],
+                "blog_uuid": post_payload["blog"]["uuid"]
+            }
 
         return response
 
