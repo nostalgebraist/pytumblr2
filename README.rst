@@ -221,7 +221,7 @@ Edit in legacy:
 
 .. code:: python
 
-    client.edit_post(blogName, id=post_id, type="photo", data="/Users/johnb/mega/awesome.jpg")
+    client.legacy_edit_post(blogName, id=post_id, type="photo", data="/Users/johnb/mega/awesome.jpg")
 
 Reblogging a Post
 ^^^^^^^^^^^^^^^^^
