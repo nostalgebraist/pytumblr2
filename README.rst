@@ -110,7 +110,7 @@ To control this, use
 
     # during client construction
     client = pytumblr2.TumblrRestClient(..., consume_in_npf_by_default=False)  # legacy consumption
-    client = pytumblr2.TumblrRestClient(..., consume_in_npf_by_default=TRue)  # NPF consumption
+    client = pytumblr2.TumblrRestClient(..., consume_in_npf_by_default=True)  # NPF consumption
 
 Note that NPF consumption is `strongly recommended by the developers of tumblr <https://github.com/tumblr/docs/blob/master/api.md#response-12>`_.
 
