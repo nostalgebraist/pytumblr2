@@ -188,6 +188,23 @@ class TumblrRestClient(object):
         return self.send_api_request("get", url, kwargs, True)
 
     @validate_blogname
+    def notifications(self, blogname, **kwargs):
+        """
+        Gets a list of activity notifications for a particular blog
+
+        :param blogname: a string, the blogname you want to look up posts
+                         for. eg: codingjester.tumblr.com
+        :param before: an int, the timestamp for posts you want before.
+        :param type: An array of one or more notification types to filter by, or none if you want all
+
+        NOTE: the `type` parameter of the notifications endpoint has been historically unreliable.  If in doubt, don't use it.
+
+        :returns: a dict created from the JSON response
+        """
+        url = "/v2/blog/{}/notifications".format(blogname)
+        return self.send_api_request("get", url, kwargs, True)
+
+    @validate_blogname
     def blog_info(self, blogname):
         """
         Gets the information of the given blog
