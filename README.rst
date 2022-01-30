@@ -47,8 +47,10 @@ Quick demo, if you're familiar with pytumblr:
         content=[{'type': 'text', 'text': "I'm reblogging myself"}]
     )
 
+    # fetch notifications (the items that appear on the activity page)
+    response = client.notifications('your_blogname')
+
 Planned features that aren't implemented yet:
-        - support the notifications endpoint
         - helpers for pagination
         - helpers for load balancing across clients
 
@@ -304,6 +306,20 @@ The results include a timestamp you can use to make future calls.
 
     data = client.notes(blogName, id='123456', before_timestamp=data["_links"]["next"]["query_params"]["before_timestamp"])
 
+Getting notifications
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Notifications are the items that appear on a user's activity page.  You can fetch them like this:
+
+.. code:: python
+
+    data = client.notifications(blogName)
+
+The results include a timestamp you can use to make future calls.
+
+.. code:: python
+
+    data = client.notifications(blogName, before=data["_links"]["next"]["query_params"]["before"])
 
 Tagged Methods
 ~~~~~~~~~~~~~~
