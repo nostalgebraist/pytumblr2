@@ -101,6 +101,10 @@ class TumblrRequest(object):
         try:
             if files:
                 return self.post_multipart_legacy(url, params, files)
+            elif params.get('media_sources') is not None:
+                real_params = {k: v for k, v in params.items() if k != 'media_sources'}
+                media_sources = params['media_sources']
+                return self.put_multipart_legacy(url, real_params, media_sources)
             else:
                 resp = requests.put(
                     url, json=params, headers=self.headers, auth=self.oauth
@@ -160,6 +164,12 @@ class TumblrRequest(object):
             return data
 
     def post_multipart_legacy(self, url, params, files):
+        return self._send_multipart_legacy('post', url, params, files)
+
+    def put_multipart_legacy(self, url, params, files):
+        return self._send_multipart_legacy('put', url, params, files)
+
+    def _send_multipart_legacy(self, method, url, params, files):
         """
         Generates and issues a multipart request for data files (legacy media posts)
 
@@ -169,7 +179,7 @@ class TumblrRequest(object):
 
         :returns: a dict parsed from the JSON response
         """
-        resp = requests.post(
+        resp = getattr(requests, method)(
             url,
             data=params,
             params=params,
@@ -181,6 +191,12 @@ class TumblrRequest(object):
         return self.json_parse(resp)
 
     def post_multipart_npf(self, url, params, media_sources):
+        return self._send_multipart_npf('post', url, params, media_sources)
+
+    def put_multipart_npf(self, url, params, media_sources):
+        return self._send_multipart_npf('put', url, params, media_sources)
+
+    def _send_multipart_npf(self, method, url, params, media_sources):
         """
         Generates and issues a multipart request for data files (NPF media blocks)
 
@@ -200,7 +216,7 @@ class TumblrRequest(object):
             ]
         ]
 
-        resp = requests.post(
+        resp = getattr(requests, method)(
             url,
             files=files,
             headers=self.headers,
