@@ -48,7 +48,6 @@ Quick demo, if you're familiar with pytumblr:
     )
 
 Planned features that aren't implemented yet:
-        - support media uploads in NPF post creation/editing
         - support the notifications endpoint
         - helpers for pagination
         - helpers for load balancing across clients
@@ -176,9 +175,27 @@ Blog Methods
     client.queue(blogName) # get the queue for a given blog
     client.submission(blogName) # get the submissions for a given blog
 
+Post creation and editing
+-----------------
+
+General note on using these methods
+~~~~~~~~~~~~
+
+Post creation and editing methods take a variety of keyword arguments.  Outside of a few special cases, these arguments are passed on directly to the tumblr API as key-value pairs in the json payload.
+
+For example, the API spec `says <https://github.com/tumblr/docs/blob/master/api.md#request-parameters-24>`_  says ``content`` is a required field when creating an NPF post.  In PyTumblr2, you'll provide the value of this field by passing an argument ``content=[...]`` to the method ``create_post``.
+
+For guidance on constructing these requests, you should consult
+
+- `The tumblr API spec <https://github.com/tumblr/docs/blob/master/api.md>`_
+    - for the names and meanings of the JSON fields that the API accepts in each type of request (e.g. "create NPF post," "edit legacy post")
+
+- `The NPF spec <https://github.com/tumblr/docs/blob/master/npf-spec.md>`_
+    - for information about how to compose posts in NPF using the ``content`` and (optionally) ``layout`` JSON fields
+
 
 Creating posts
-^^^^^^^^^^^^^^
+~~~~~~~~~~~~
 
 Create posts in NPF with ``create_post``:
 
@@ -186,6 +203,18 @@ Create posts in NPF with ``create_post``:
 
     client.create_post(blogName, content=[{'type': 'text', 'text': "my post"}])
 
+To create an NPF post containing media, pass an additional argument ``media_sources``.  The value should be a dict mapping each identifiers from the post's media blocks to a file path or file object.
+
+.. code:: python
+
+    client.create_post(
+        blogName,
+        content=[
+            {"type": "text", 'text': "cool picture"},
+            {"type": "image", "media": [{"type": "image/jpeg", "identifier": "my_media_identifier"}]}},
+        ],
+        media_sources={"my_media_identifier": "/Users/johnb/path/to/my/image.jpg"}
+    )
 
 If you want to create a legacy post, use one of the methods with a ``legacy_create_`` prefix.  For example:
 
@@ -209,7 +238,7 @@ If you want to create a legacy post, use one of the methods with a ``legacy_crea
                                caption="## Mega sweet kittens")
 
 Editing a post
-^^^^^^^^^^^^^^
+~~~~~~~~~~~~
 
 Edit in NPF:
 
@@ -224,7 +253,7 @@ Edit in legacy:
     client.legacy_edit_post(blogName, id=post_id, type="photo", data="/Users/johnb/mega/awesome.jpg")
 
 Reblogging a Post
-^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~
 
 Reblog in NPF, using your blog name, the target blog name, and the target post ID:
 
@@ -242,8 +271,11 @@ Reblog in legacy:
 
     client.legacy_reblog(blogName, id=125356, reblog_key="reblog_key")
 
+Other methods
+-----------------
+
 Deleting a post
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~
 
 Deleting just requires that you own the post and have the post id
 
@@ -258,7 +290,7 @@ A note on tags: When passing tags, as params, please pass them as a list (not a 
     client.create_text(blogName, tags=['hello', 'world'], ...)
 
 Getting notes for a post
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~
 
 In order to get the notes for a post, you need to have the post id and the blog that it is on.
 
