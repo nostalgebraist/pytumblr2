@@ -344,17 +344,14 @@ class TumblrRestClient(object):
         """
         Create a new NPF post
 
-        Doesn't support user-uploaded media (e.g. photos) yet.
-        These are supported in legacy, just not in NPF yet.
-
         :param blogname: a string, the url of the blog you want to post to.
         :param content: list of NPF content blocks
-        :param state: list of NPF layout entries
+        :param layout: list of NPF layout entries
         :param state: a string, The state of the post.
         :param tags: a list of tags that you want applied to the post
         :param date: a string, the GMT date and time of the post
         :param slug: a string, a short text summary to the end of the post url
-        :param data: a string or a list of the path of photo(s)
+        :param media_sources: a dict containing media to be uploaded, of the form {identifier: path_or_file_object}
 
         :returns: a dict created from the JSON response
         """
@@ -363,20 +360,17 @@ class TumblrRestClient(object):
     @validate_blogname
     def edit_post(self, blogname, id, **kwargs):
         """
-        Create a new NPF post
-
-        Doesn't support user-uploaded media (e.g. photos) yet.
-        These are supported in legacy, just not in NPF yet.
+        Edit an NPF post
 
         :param blogname: a string, the url of the blog you want to post to.
         :param id: an integer, the id of the post you want to edit.
         :param content: list of NPF content blocks
-        :param state: list of NPF layout entries
+        :param layout: list of NPF layout entries
         :param state: a string, The state of the post.
         :param tags: a list of tags that you want applied to the post
         :param date: a string, the GMT date and time of the post
         :param slug: a string, a short text summary to the end of the post url
-        :param data: a string or a list of the path of photo(s)
+        :param media_sources: a dict containing media to be uploaded, of the form {identifier: path_or_file_object}
 
         :returns: a dict created from the JSON response
         """
@@ -707,12 +701,22 @@ class TumblrRestClient(object):
 
         files = {}
         if "data" in params:
+            # media uploads for legacy photo/video/etc post types
             if isinstance(params["data"], list):
                 for idx, data in enumerate(params["data"]):
                     files["data[" + str(idx) + "]"] = open(params["data"][idx], "rb")
             else:
                 files = {"data": open(params["data"], "rb")}
             del params["data"]
+
+
+        if "media_sources" in params:
+            # media uploads for NPF media blocks
+            ks = list(params["media_sources"].keys())
+            for k in ks:
+                if isinstance(k, str):
+                    # got file path, need file object
+                    params["media_sources"][k] = open(params["media_sources"][k], "rb")
 
         if method == "get":
             response = self.request.get(url, params)
