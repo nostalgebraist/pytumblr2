@@ -91,7 +91,7 @@ class UploadCommand(Command):
 
 setup(
     name="PyTumblr2",
-    version="0.0.1",
+    version="0.1.0",
     description="A Python API v2 wrapper for Tumblr, updated for NPF compliance (and beyond!)",
     long_description=long_description,
     author="nostalgebraist",
