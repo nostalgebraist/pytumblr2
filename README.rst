@@ -176,10 +176,10 @@ Blog Methods
     client.submission(blogName) # get the submissions for a given blog
 
 Post creation and editing
------------------
+-------------------------
 
 General note on using these methods
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Post creation and editing methods take a variety of keyword arguments.  Outside of a few special cases, these arguments are passed on directly to the tumblr API as key-value pairs in the json payload.
 
@@ -195,7 +195,7 @@ For guidance on constructing these requests, you should consult
 
 
 Creating posts
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 Create posts in NPF with ``create_post``:
 
@@ -238,7 +238,7 @@ If you want to create a legacy post, use one of the methods with a ``legacy_crea
                                caption="## Mega sweet kittens")
 
 Editing a post
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 Edit in NPF:
 
