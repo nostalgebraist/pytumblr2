@@ -176,7 +176,7 @@ Blog Methods
     client.submission(blogName) # get the submissions for a given blog
 
 Post creation and editing
------------------
+-----------------------------
 
 General note on using these methods
 ~~~~~~~~~~~~
