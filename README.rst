@@ -253,7 +253,7 @@ Edit in legacy:
     client.legacy_edit_post(blogName, id=post_id, type="photo", data="/Users/johnb/mega/awesome.jpg")
 
 Reblogging a Post
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 Reblog in NPF, using your blog name, the target blog name, and the target post ID:
 
@@ -275,7 +275,7 @@ Other methods
 -----------------
 
 Deleting a post
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 Deleting just requires that you own the post and have the post id
 
@@ -290,7 +290,7 @@ A note on tags: When passing tags, as params, please pass them as a list (not a 
     client.create_text(blogName, tags=['hello', 'world'], ...)
 
 Getting notes for a post
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to get the notes for a post, you need to have the post id and the blog that it is on.
 

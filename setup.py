@@ -94,6 +94,7 @@ setup(
     version="0.1.0",
     description="A Python API v2 wrapper for Tumblr, updated for NPF compliance (and beyond!)",
     long_description=long_description,
+    long_description_content_type="text/x-rst",
     author="nostalgebraist",
     author_email="nostalgebraist@gmail.com",
     url="https://github.com/nostalgebraist/pytumblr",
