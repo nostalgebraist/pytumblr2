@@ -12,7 +12,7 @@ class TumblrRequest(object):
     A simple request object that lets us query the Tumblr API
     """
 
-    __version = "0.1.0"
+    __version = "0.0.1"
 
     def __init__(
         self,
