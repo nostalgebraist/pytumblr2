@@ -100,11 +100,11 @@ class TumblrRequest(object):
         url = self.host + url
         try:
             if files:
-                return self.post_multipart_legacy(url, params, files)
+                return self.put_multipart_legacy(url, params, files)
             elif params.get('media_sources') is not None:
                 real_params = {k: v for k, v in params.items() if k != 'media_sources'}
                 media_sources = params['media_sources']
-                return self.put_multipart_legacy(url, real_params, media_sources)
+                return self.put_multipart_npf(url, real_params, media_sources)
             else:
                 resp = requests.put(
                     url, json=params, headers=self.headers, auth=self.oauth
