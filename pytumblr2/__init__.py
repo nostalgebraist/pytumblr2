@@ -445,7 +445,7 @@ class TumblrRestClient(object):
             }
         )
 
-        if "tags" in kwargs and kwargs["tags"]:
+        if "tags" in kwargs and not isinstance(kwargs["tags"], str):
             # Take a list of tags and make them acceptable for upload
             kwargs["tags"] = ",".join(kwargs["tags"])
         return self.send_api_request("post", url, kwargs)
@@ -614,7 +614,7 @@ class TumblrRestClient(object):
         """
         url = "/v2/blog/{}/post/reblog".format(blogname)
 
-        if "tags" in kwargs and kwargs["tags"]:
+        if "tags" in kwargs and not isinstance(kwargs["tags"], str):
             # Take a list of tags and make them acceptable for upload
             kwargs["tags"] = ",".join(kwargs["tags"])
         return self.send_api_request("post", url, kwargs)
@@ -652,7 +652,7 @@ class TumblrRestClient(object):
 
         kwargs.update({"id": id})
 
-        if "tags" in kwargs and kwargs["tags"]:
+        if "tags" in kwargs and not isinstance(kwargs["tags"], str):
             # Take a list of tags and make them acceptable for upload
             kwargs["tags"] = ",".join(kwargs["tags"])
 
