@@ -240,10 +240,10 @@ class TumblrRestClientTest(unittest.TestCase):
 
     @mock.patch('requests.get')
     def test_tagged(self, mock_get):
-        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": {}}')
+        mock_get.side_effect = wrap_response('{"meta": {"status": 200, "msg": "OK"}, "response": []}')
 
         response = self.client.tagged('food')
-        assert response == {}
+        assert response == []
 
     @mock.patch('requests.post')
     def test_legacy_create_text(self, mock_post):
