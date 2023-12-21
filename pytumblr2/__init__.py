@@ -392,6 +392,9 @@ class TumblrRestClient(object):
         :returns: a dict created from the JSON response
         """
         url = "/v2/blog/{}/posts/{}".format(blogname, id)
+        if "tags" in kwargs and not isinstance(kwargs["tags"], str):
+            # Take a list of tags and make them acceptable for upload
+            kwargs["tags"] = ",".join(kwargs["tags"])
         return self.send_api_request('put', url, kwargs)
 
     @validate_blogname
