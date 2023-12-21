@@ -1,26 +1,14 @@
 # Contributing
 
-We want to make contributing to pytumblr as easy and transparent as possible. If you run into problems, please open an issue. We also actively welcome pull requests.
+If you encounter a problem, feel free to open an issue.  Pull requests are also welcome.
 
-## Pull Requests
+## Testing
 
-1. Fork the repo and create your branch from `master`.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. If you haven't already, complete the Contributor License Agreement ("CLA").
+The tests here were inherited from the original pytumblr. I haven't found them very helpful in catching bugs.  So, if you're writing a PR that adds a feature or fixes a bug, don't worry about adding tests similar to the existing ones.
 
-## Contributor License Agreement ("CLA")
-
-In order to accept your contribution, we need you to submit a CLA. If you open
-a pull request, a bot will automatically check if you have already submitted
-one. If not it will ask you to do so by visiting a link and signing in with
-GitHub.
-
-The CLA, contact information, and GitHub sign-in can be found here:
-[https://yahoocla.herokuapp.com](https://yahoocla.herokuapp.com).
+On the other hand, if you have an idea for a more helpful test suite, feel free to make a PR for it.
 
 ## License
 
-By contributing to pytumblr you agree that your contributions will be licensed under its Apache 2.0 license.
+By contributing to pytumblr2 you agree that your contributions will be licensed under its Apache 2.0 license.
 
