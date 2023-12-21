@@ -746,11 +746,23 @@ class TumblrRestClient(object):
             response = self.request.put(url, params)
         else:
             response = self.request.post(url, params, files)
+        
+        if isinstance(response, list):
+            # use presence of "post_url" key as proxy for testing if list objects are posts. this
+            # doesn't handle the case that the list is heterogeneous but surely not even tumblr
+            # would ever publish such a chaotic api as to return a heterogeneous list
+            if all("post_url" in p for p in response):
+                if self.convert_npf_to_legacy_html:
+                    response = [simulate_legacy_payload(p) for p in response]
+                posts_to_cache = response
+            else:
+                posts_to_cache = []
+        elif isinstance(response, dict):
+            if self.convert_npf_to_legacy_html and "posts" in response:
+                response["posts"] = [simulate_legacy_payload(p) for p in response["posts"]]
+            posts_to_cache = response.get("posts", [])
 
-        if self.convert_npf_to_legacy_html and "posts" in response:
-            response["posts"] = [simulate_legacy_payload(p) for p in response["posts"]]
-
-        for post_payload in response.get("posts", []):
+        for post_payload in posts_to_cache:
             post_identifier = PostIdentifier(post_payload["blog"]["name"], post_payload["id"])
             self.reblog_requirements_cache[post_identifier] = {
                 "reblog_key": post_payload["reblog_key"],
