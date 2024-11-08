@@ -732,11 +732,11 @@ class TumblrRestClient(object):
 
         if "media_sources" in params:
             # media uploads for NPF media blocks
-            ks = list(params["media_sources"].keys())
-            for k in ks:
-                if isinstance(k, str):
+            sources = params["media_sources"].items()
+            for k, v in sources:
+                if isinstance(v, str):
                     # got file path, need file object
-                    params["media_sources"][k] = open(params["media_sources"][k], "rb")
+                    params["media_sources"][k] = open(params["media_sources"][v], "rb")
 
         if method == "get":
             response = self.request.get(url, params)
